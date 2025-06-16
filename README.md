@@ -364,5 +364,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## Acknowledgements
 
 - Developed by [0xshr00msz](https://github.com/0xshr00msz)
+- Created with assistance from Amazon Q
 - Inspired by Naruto Shippuden and the concept of Izanami
 - Built for educational purposes to teach web security concepts
