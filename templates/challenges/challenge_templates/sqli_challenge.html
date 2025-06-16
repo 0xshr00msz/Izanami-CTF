@@ -86,7 +86,8 @@
             <!-- Flag Submission Form -->
             <div class="flag-submission">
                 <h5><i class="fas fa-flag text-danger"></i> Submit Flag</h5>
-                <form id="flag-form" data-challenge-id="{{ challenge.id }}">
+                {% if not solved %}
+                <form id="flag-form" data-challenge-id="{{ challenge.id }}" data-solved="{{ solved|yesno:'true,false' }}">
                     {% csrf_token %}
                     <div class="input-group">
                         <input type="text" id="flag-input" class="form-control" placeholder="Enter flag here...">
@@ -96,6 +97,11 @@
                         <i class="fas fa-fire text-primary"></i> Chakra cost: {{ challenge.chakra_cost }}
                     </small>
                 </form>
+                {% else %}
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle me-2"></i> You have already solved this challenge!
+                </div>
+                {% endif %}
                 <div id="flag-message" class="mt-3"></div>
             </div>
         </div>

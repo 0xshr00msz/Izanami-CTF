@@ -14,6 +14,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.db import connection
 from django.utils.safestring import mark_safe
 from .models import Challenge, Hint, ChallengeSolve, ChallengeAttempt, HintUnlock, DifficultyLevel, ChallengeCategory
+from accounts.models import Achievement, PlayerAchievement
 
 @login_required
 def index(request):
@@ -193,56 +194,78 @@ def challenge_detail(request, challenge_id):
 def submit_flag(request, challenge_id):
     """Submit a flag for a challenge."""
     if request.method != 'POST':
-        return redirect('challenges:detail', challenge_id=challenge_id)
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
     
     challenge = get_object_or_404(Challenge, pk=challenge_id, is_active=True)
     submitted_flag = request.POST.get('flag', '').strip()
     
-    # Check if user has enough chakra
-    profile = request.user.profile
-    if profile.chakra_meter < challenge.chakra_cost:
+    # Check if the user has already solved this challenge
+    if ChallengeSolve.objects.filter(user=request.user, challenge=challenge).exists():
         return JsonResponse({
             'success': False,
-            'message': 'Not enough chakra to attempt this challenge!'
+            'message': 'You have already solved this challenge!'
         })
     
-    # Decrease chakra
-    profile.decrease_chakra(challenge.chakra_cost)
+    # Check if the user has enough chakra
+    if request.user.profile.chakra_meter < challenge.chakra_cost:
+        return JsonResponse({
+            'success': False,
+            'message': f'Not enough chakra! You need {challenge.chakra_cost} chakra to attempt this challenge.'
+        })
     
-    # Check if the flag is correct
-    is_correct = (submitted_flag == challenge.flag)
+    # Deduct chakra cost
+    request.user.profile.chakra_meter -= challenge.chakra_cost
+    request.user.profile.save()
     
     # Record the attempt
     attempt = ChallengeAttempt.objects.create(
         user=request.user,
         challenge=challenge,
         submitted_flag=submitted_flag,
-        is_correct=is_correct
+        is_correct=False
     )
     
-    if is_correct:
-        # Record the solve if not already solved
-        solve, created = ChallengeSolve.objects.get_or_create(
+    # Check if the flag is correct
+    if submitted_flag == challenge.flag:
+        # Mark the attempt as correct
+        attempt.is_correct = True
+        attempt.save()
+        
+        # Record the solve
+        ChallengeSolve.objects.create(
             user=request.user,
             challenge=challenge,
-            defaults={'attempts': 1}
+            points=challenge.points
         )
         
-        if not created:
-            # Update attempts count if already solved
-            solve.attempts += 1
-            solve.save()
+        # Award sharingan points
+        request.user.profile.sharingan_points += challenge.points
+        request.user.profile.save()
         
-        # Award points
-        profile.increase_sharingan_points(challenge.points)
+        # Check for first blood
+        first_blood = not ChallengeSolve.objects.filter(challenge=challenge).exclude(user=request.user).exists()
+        if first_blood:
+            # Award first blood achievement
+            first_blood_achievement = Achievement.objects.get(name='First Blood')
+            PlayerAchievement.objects.get_or_create(
+                player=request.user.profile,
+                achievement=first_blood_achievement
+            )
+            
+            # Award bonus points for first blood
+            request.user.profile.sharingan_points += 50
+            request.user.profile.save()
         
         return JsonResponse({
             'success': True,
-            'message': 'Congratulations! You solved the challenge!'
+            'message': f'Correct flag! You earned {challenge.points} sharingan points.',
+            'points': challenge.points,
+            'first_blood': first_blood
         })
     else:
-        # Increment genjutsu counter (loop counter)
-        profile.increment_genjutsu_counter()
+        # Increment genjutsu counter
+        request.user.profile.genjutsu_counter += 1
+        request.user.profile.save()
         
         return JsonResponse({
             'success': False,
@@ -275,13 +298,15 @@ def unlock_hint(request, challenge_id):
         })
     
     # Decrease chakra and unlock hint
-    profile.decrease_chakra(hint.chakra_cost)
+    profile.chakra_meter -= hint.chakra_cost
+    profile.save()
     HintUnlock.objects.create(user=request.user, hint=hint)
     
     return JsonResponse({
         'success': True,
         'message': 'Hint unlocked!',
-        'hint': hint.content
+        'hint': hint.content,
+        'chakra': profile.chakra_meter
     })
 
 # Vulnerable API endpoints for challenges
