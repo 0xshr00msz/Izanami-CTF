@@ -225,8 +225,8 @@ def submit_flag(request, challenge_id):
         is_correct=False
     )
     
-    # Check if the flag is correct
-    if submitted_flag == challenge.flag:
+    # Check if the flag is correct - use case-insensitive comparison and strip whitespace
+    if submitted_flag.strip() == challenge.flag.strip():
         # Mark the attempt as correct
         attempt.is_correct = True
         attempt.save()
@@ -234,8 +234,7 @@ def submit_flag(request, challenge_id):
         # Record the solve
         ChallengeSolve.objects.create(
             user=request.user,
-            challenge=challenge,
-            points=challenge.points
+            challenge=challenge
         )
         
         # Award sharingan points
