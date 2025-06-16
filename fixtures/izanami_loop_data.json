@@ -1,0 +1,228 @@
+[
+  {
+    "model": "core.realitylayer",
+    "pk": 1,
+    "fields": {
+      "name": "First Illusion",
+      "description": "The first layer of the Izanami genjutsu. In this reality, things appear normal, but subtle distortions begin to manifest.",
+      "level": 1,
+      "escape_condition": "Find the hidden pattern in the Academy challenges and submit the escape flag.",
+      "escape_flag": "izanami{f1rst_l4y3r_br0k3n}"
+    }
+  },
+  {
+    "model": "core.realitylayer",
+    "pk": 2,
+    "fields": {
+      "name": "Deepening Deception",
+      "description": "The second layer of the Izanami genjutsu. Reality becomes more distorted, and challenges begin to change in subtle ways.",
+      "level": 2,
+      "escape_condition": "Collect all memory fragments from Chunin challenges and recognize the pattern they form.",
+      "escape_flag": "izanami{d33p3r_1nto_th3_g3njutsu}"
+    }
+  },
+  {
+    "model": "core.realitylayer",
+    "pk": 3,
+    "fields": {
+      "name": "Fractured Reality",
+      "description": "The third layer of the Izanami genjutsu. Reality is severely distorted, and challenges may appear completely different from their original form.",
+      "level": 3,
+      "escape_condition": "Solve the hidden challenge that appears only in this layer and submit its flag as the escape flag.",
+      "escape_flag": "izanami{fr4ctur3d_r34l1ty_p13rc3d}"
+    }
+  },
+  {
+    "model": "core.realitylayer",
+    "pk": 4,
+    "fields": {
+      "name": "True Reality",
+      "description": "The final layer of the Izanami genjutsu. You have broken through the illusions and are now facing the true nature of the loop.",
+      "level": 4,
+      "escape_condition": "Combine all the pattern recognition flags into a single acceptance flag to break free from the Izanami Loop.",
+      "escape_flag": "izanami{tru3_s3lf_4cc3pt4nc3}"
+    }
+  },
+  {
+    "model": "core.looppattern",
+    "pk": 1,
+    "fields": {
+      "name": "Repeating Challenges",
+      "description": "Challenges that appear to be different but follow the same underlying pattern.",
+      "clue": "Look for challenges with similar solutions but different presentations.",
+      "recognition_flag": "izanami{r3p34t1ng_p4tt3rn}"
+    }
+  },
+  {
+    "model": "core.looppattern",
+    "pk": 2,
+    "fields": {
+      "name": "False Flags",
+      "description": "Some flags appear to be correct but lead deeper into the loop.",
+      "clue": "Not all flags that work are the true flags. Look for inconsistencies in the reward system.",
+      "recognition_flag": "izanami{f4ls3_fl4gs_d3c3pt10n}"
+    }
+  },
+  {
+    "model": "core.looppattern",
+    "pk": 3,
+    "fields": {
+      "name": "Memory Distortion",
+      "description": "Your memories of previous challenges are being distorted.",
+      "clue": "Compare challenge descriptions over time to spot subtle changes.",
+      "recognition_flag": "izanami{m3m0ry_d1st0rt10n}"
+    }
+  },
+  {
+    "model": "core.looppattern",
+    "pk": 4,
+    "fields": {
+      "name": "Reality Layers",
+      "description": "The Izanami Loop consists of multiple layers of reality.",
+      "clue": "Each time you think you've escaped, you're just entering a deeper layer.",
+      "recognition_flag": "izanami{l4y3r3d_r34l1ty}"
+    }
+  },
+  {
+    "model": "core.looppattern",
+    "pk": 5,
+    "fields": {
+      "name": "Self Acceptance",
+      "description": "The only way to break free from the Izanami Loop is to accept your true self.",
+      "clue": "Collect all real memory fragments to piece together your true identity.",
+      "recognition_flag": "izanami{tru3_s3lf_4cc3pt4nc3}"
+    }
+  },
+  {
+    "model": "core.memoryfragment",
+    "pk": 1,
+    "fields": {
+      "name": "Academy Entrance",
+      "description": "A memory fragment showing your first day at the Academy.",
+      "content": "You remember entering the Academy for the first time, excited to begin your training. But something feels off about this memory...",
+      "is_real": true,
+      "challenge": 1,
+      "image_url": "/static/images/fragments/academy_entrance.jpg"
+    }
+  },
+  {
+    "model": "core.memoryfragment",
+    "pk": 2,
+    "fields": {
+      "name": "First Challenge",
+      "description": "A memory fragment of your first challenge.",
+      "content": "You remember solving the Login Bypass challenge, but the solution you remember doesn't match what actually happened...",
+      "is_real": true,
+      "challenge": 2,
+      "image_url": "/static/images/fragments/first_challenge.jpg"
+    }
+  },
+  {
+    "model": "core.memoryfragment",
+    "pk": 3,
+    "fields": {
+      "name": "Chunin Exam",
+      "description": "A memory fragment of your Chunin exam.",
+      "content": "You remember taking the Chunin exam, but the challenges you faced seem to shift and change in your memory...",
+      "is_real": true,
+      "challenge": 4,
+      "image_url": "/static/images/fragments/chunin_exam.jpg"
+    }
+  },
+  {
+    "model": "core.memoryfragment",
+    "pk": 4,
+    "fields": {
+      "name": "Jonin Promotion",
+      "description": "A memory fragment of your promotion to Jonin.",
+      "content": "You remember being promoted to Jonin, but the ceremony feels like it happened multiple times, each slightly different...",
+      "is_real": true,
+      "challenge": 7,
+      "image_url": "/static/images/fragments/jonin_promotion.jpg"
+    }
+  },
+  {
+    "model": "core.memoryfragment",
+    "pk": 5,
+    "fields": {
+      "name": "Uchiha Trial",
+      "description": "A memory fragment of your trial to join the Uchiha clan.",
+      "content": "You remember facing the final trial to join the Uchiha clan, but something about this memory feels fabricated...",
+      "is_real": true,
+      "challenge": 10,
+      "image_url": "/static/images/fragments/uchiha_trial.jpg"
+    }
+  },
+  {
+    "model": "core.memoryfragment",
+    "pk": 6,
+    "fields": {
+      "name": "Failed Mission",
+      "description": "A memory fragment of a mission you failed.",
+      "content": "You remember failing a critical mission, but this memory contradicts other memories you have...",
+      "is_real": false,
+      "challenge": 3,
+      "image_url": "/static/images/fragments/failed_mission.jpg"
+    }
+  },
+  {
+    "model": "core.memoryfragment",
+    "pk": 7,
+    "fields": {
+      "name": "Betrayal",
+      "description": "A memory fragment of being betrayed by a teammate.",
+      "content": "You remember being betrayed by a close teammate, but this memory feels implanted rather than genuine...",
+      "is_real": false,
+      "challenge": 6,
+      "image_url": "/static/images/fragments/betrayal.jpg"
+    }
+  },
+  {
+    "model": "core.memoryfragment",
+    "pk": 8,
+    "fields": {
+      "name": "Victory Celebration",
+      "description": "A memory fragment of a celebration after completing all challenges.",
+      "content": "You remember celebrating your victory after completing all challenges, but you're still in the middle of the CTF...",
+      "is_real": false,
+      "challenge": 9,
+      "image_url": "/static/images/fragments/victory.jpg"
+    }
+  },
+  {
+    "model": "accounts.achievement",
+    "pk": 9,
+    "fields": {
+      "name": "Reality Breaker",
+      "description": "Break free from the Izanami Loop by accepting your true self",
+      "icon": "fa-eye-slash"
+    }
+  },
+  {
+    "model": "accounts.achievement",
+    "pk": 10,
+    "fields": {
+      "name": "Memory Collector",
+      "description": "Collect all real memory fragments",
+      "icon": "fa-memory"
+    }
+  },
+  {
+    "model": "accounts.achievement",
+    "pk": 11,
+    "fields": {
+      "name": "Pattern Recognizer",
+      "description": "Recognize all patterns in the Izanami Loop",
+      "icon": "fa-puzzle-piece"
+    }
+  },
+  {
+    "model": "accounts.achievement",
+    "pk": 12,
+    "fields": {
+      "name": "Layer Breaker",
+      "description": "Break through all reality layers",
+      "icon": "fa-layer-group"
+    }
+  }
+]

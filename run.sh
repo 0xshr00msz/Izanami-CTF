@@ -10,6 +10,7 @@ python manage.py migrate
 # Load initial data
 echo "Loading initial data..."
 python manage.py loaddata fixtures/initial_data.json
+python manage.py loaddata fixtures/izanami_loop_data.json
 
 # Set up challenges
 echo "Setting up challenges..."

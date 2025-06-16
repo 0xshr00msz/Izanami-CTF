@@ -6,21 +6,172 @@
     <title>{% block title %}Izanami: The Endless Loop{% endblock %}</title>
     
     <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="/static/css/izanami-theme.css">
+    <style>
+        body {
+            background-color: #121212;
+            color: #e0e0e0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .navbar {
+            background-color: #1e1e1e;
+            border-bottom: 2px solid #800000;
+        }
+        
+        .navbar-brand {
+            font-weight: bold;
+            color: #dc3545 !important;
+        }
+        
+        .nav-link {
+            color: #e0e0e0 !important;
+        }
+        
+        .nav-link:hover {
+            color: #dc3545 !important;
+        }
+        
+        .nav-link.active {
+            color: #dc3545 !important;
+            font-weight: bold;
+        }
+        
+        .footer {
+            background-color: #1e1e1e;
+            border-top: 2px solid #800000;
+            padding: 20px 0;
+            margin-top: 50px;
+        }
+        
+        .btn-danger {
+            background-color: #800000;
+            border-color: #800000;
+        }
+        
+        .btn-danger:hover {
+            background-color: #600000;
+            border-color: #600000;
+        }
+        
+        .btn-outline-danger {
+            color: #dc3545;
+            border-color: #dc3545;
+        }
+        
+        .btn-outline-danger:hover {
+            background-color: #dc3545;
+            color: #fff;
+        }
+        
+        .card {
+            background-color: #1e1e1e;
+            border: 1px solid #333;
+        }
+        
+        .card-header {
+            background-color: #2d2d2d;
+            border-bottom: 1px solid #333;
+        }
+        
+        .form-control {
+            background-color: #2d2d2d;
+            border: 1px solid #444;
+            color: #e0e0e0;
+        }
+        
+        .form-control:focus {
+            background-color: #2d2d2d;
+            border-color: #800000;
+            color: #e0e0e0;
+            box-shadow: 0 0 0 0.25rem rgba(128, 0, 0, 0.25);
+        }
+        
+        .chakra-meter {
+            height: 10px;
+            background-color: #2d2d2d;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+        
+        .chakra-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #0066ff, #00ccff);
+            border-radius: 5px;
+            transition: width 0.5s ease;
+        }
+        
+        .sharingan-points {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        
+        .genjutsu-counter {
+            color: #ffc107;
+            font-weight: bold;
+        }
+        
+        /* Izanami Loop Effects */
+        .izanami-distortion-1 .navbar-brand {
+            text-shadow: 0 0 5px #dc3545;
+        }
+        
+        .izanami-distortion-2 .navbar {
+            animation: subtle-shift 10s infinite alternate;
+        }
+        
+        .izanami-distortion-3 {
+            animation: subtle-flicker 20s infinite;
+        }
+        
+        @keyframes subtle-shift {
+            0% {
+                transform: skew(0deg);
+            }
+            100% {
+                transform: skew(0.5deg);
+            }
+        }
+        
+        @keyframes subtle-flicker {
+            0% {
+                opacity: 1;
+            }
+            95% {
+                opacity: 1;
+            }
+            96% {
+                opacity: 0.8;
+            }
+            97% {
+                opacity: 1;
+            }
+            98% {
+                opacity: 0.9;
+            }
+            99% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+    </style>
     
     {% block extra_css %}{% endblock %}
 </head>
-<body class="bg-dark text-light">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-black">
+<body class="{% if izanami_loop.distortion_level > 0 %}izanami-distortion-{{ izanami_loop.distortion_level }}{% endif %}">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark mb-4">
         <div class="container">
-            <a class="navbar-brand" href="{% url 'core:home' %}">
-                <i class="fas fa-eye text-danger"></i> Izanami
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-eye text-danger me-2"></i> Izanami CTF
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -28,120 +179,154 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'core:home' %}">Home</a>
+                        <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="/">
+                            <i class="fas fa-home"></i> Home
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'challenges:index' %}">Challenges</a>
+                        <a class="nav-link {% if '/challenges/' in request.path %}active{% endif %}" href="/challenges/">
+                            <i class="fas fa-flag"></i> Challenges
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'scoreboard:scoreboard' %}">Scoreboard</a>
+                        <a class="nav-link {% if '/scoreboard/' in request.path %}active{% endif %}" href="/scoreboard/">
+                            <i class="fas fa-trophy"></i> Scoreboard
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'core:rules' %}">Rules</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'core:about' %}">About</a>
+                        <a class="nav-link {% if '/izanami-status/' in request.path %}active{% endif %}" href="/izanami-status/">
+                            <i class="fas fa-sync-alt"></i> Izanami Loop
+                        </a>
                     </li>
                 </ul>
                 <ul class="navbar-nav">
                     {% if user.is_authenticated %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'accounts:profile' %}">
-                            <i class="fas fa-user"></i> {{ user.username }}
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'accounts:logout' %}">
-                            <i class="fas fa-sign-out-alt"></i> Logout
-                        </a>
-                    </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user-ninja"></i> {{ user.username }}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end">
+                                <li>
+                                    <a class="dropdown-item" href="/accounts/profile/">
+                                        <i class="fas fa-id-card"></i> Profile
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="/accounts/achievements/">
+                                        <i class="fas fa-medal"></i> Achievements
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item" href="/accounts/logout/">
+                                        <i class="fas fa-sign-out-alt"></i> Logout
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <span class="nav-link">
+                                <i class="fas fa-fire text-primary"></i> 
+                                <span id="chakra-value">{{ user.profile.chakra_meter }}</span>
+                                <div class="chakra-meter">
+                                    <div class="chakra-fill" style="width: {{ user.profile.chakra_meter }}%;"></div>
+                                </div>
+                            </span>
+                        </li>
+                        <li class="nav-item">
+                            <span class="nav-link sharingan-points">
+                                <i class="fas fa-eye"></i> {{ user.profile.sharingan_points }}
+                            </span>
+                        </li>
+                        <li class="nav-item">
+                            <span class="nav-link genjutsu-counter">
+                                <i class="fas fa-redo-alt"></i> {{ user.profile.genjutsu_counter }}
+                            </span>
+                        </li>
                     {% else %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'accounts:login' %}">
-                            <i class="fas fa-sign-in-alt"></i> Login
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'accounts:register' %}">
-                            <i class="fas fa-user-plus"></i> Register
-                        </a>
-                    </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/accounts/login/">
+                                <i class="fas fa-sign-in-alt"></i> Login
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/accounts/register/">
+                                <i class="fas fa-user-plus"></i> Register
+                            </a>
+                        </li>
                     {% endif %}
                 </ul>
             </div>
         </div>
     </nav>
-    
-    {% if user.is_authenticated %}
-    <div class="container mt-2">
-        <div class="row">
-            <div class="col-md-6">
-                <div class="d-flex align-items-center">
-                    <div class="me-3">
-                        <i class="fas fa-eye text-danger"></i> Sharingan Points: 
-                        <span class="badge bg-danger">{{ user.profile.sharingan_points }}</span>
-                    </div>
-                    <div>
-                        <i class="fas fa-fire text-primary"></i> Chakra: 
-                        <div class="progress" style="width: 100px; height: 15px;">
-                            <div class="progress-bar bg-primary" role="progressbar" 
-                                 style="width: {{ user.profile.chakra_meter }}%;" 
-                                 aria-valuenow="{{ user.profile.chakra_meter }}" aria-valuemin="0" aria-valuemax="100">
-                                {{ user.profile.chakra_meter }}%
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6 text-end">
-                <div>
-                    <i class="fas fa-sync-alt text-warning"></i> Genjutsu Counter: 
-                    <span class="badge bg-warning text-dark">{{ user.profile.genjutsu_counter }}</span>
-                </div>
-            </div>
-        </div>
-    </div>
-    {% endif %}
-    
-    <div class="container mt-4">
-        {% if messages %}
-        <div class="messages">
-            {% for message in messages %}
-            <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-            {% endfor %}
-        </div>
-        {% endif %}
-        
+
+    <!-- Main Content -->
+    <div class="container">
         {% block content %}{% endblock %}
     </div>
-    
-    <footer class="bg-black text-light py-4 mt-5">
+
+    <!-- Footer -->
+    <footer class="footer mt-5">
         <div class="container">
             <div class="row">
                 <div class="col-md-6">
-                    <h5>Izanami: The Endless Loop</h5>
-                    <p>A web-based CTF game inspired by Itachi's Sharingan Izanami.</p>
-                    <p>Developed by <a href="#" class="text-danger">0xshr00msz</a></p>
+                    <h5 class="text-danger">Izanami: The Endless Loop</h5>
+                    <p>A web-based CTF game inspired by Itachi's Sharingan Izanami from Naruto Shippuden.</p>
                 </div>
-                <div class="col-md-6 text-md-end">
-                    <p>&copy; 2025 Izanami CTF</p>
+                <div class="col-md-3">
+                    <h5 class="text-danger">Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/challenges/" class="text-light">Challenges</a></li>
+                        <li><a href="/scoreboard/" class="text-light">Scoreboard</a></li>
+                        <li><a href="/izanami-status/" class="text-light">Izanami Loop</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5 class="text-danger">Connect</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="https://github.com/0xshr00msz/izanami-ctf" class="text-light"><i class="fab fa-github"></i> GitHub</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12 text-center">
+                    <p class="text-muted">© 2025 Izanami CTF. All rights reserved.</p>
                 </div>
             </div>
         </div>
     </footer>
-    
-    <!-- Bootstrap JS Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     
-    <!-- Custom JS -->
-    <script src="/static/js/game-engine.js"></script>
-    <script src="/static/js/challenge-specific/flag-submission.js"></script>
+    <!-- Common JavaScript -->
+    <script>
+        // Function to get CSRF token
+        function getCsrfToken() {
+            return $('input[name=csrfmiddlewaretoken]').val();
+        }
+        
+        // Update chakra meter display
+        function updateChakraMeter(value) {
+            $('#chakra-value').text(value);
+            $('.chakra-fill').css('width', value + '%');
+        }
+        
+        {% if izanami_loop and izanami_loop.distortion_level >= 3 %}
+        // Add random UI glitches for high distortion levels
+        setInterval(function() {
+            if (Math.random() > 0.9) {
+                $('body').addClass('izanami-distortion-3');
+                setTimeout(function() {
+                    $('body').removeClass('izanami-distortion-3');
+                }, 200);
+            }
+        }, 5000);
+        {% endif %}
+    </script>
     
     {% block extra_js %}{% endblock %}
 </body>

@@ -1,0 +1,395 @@
+{% extends 'base.html' %}
+
+{% block title %}Izanami Loop Status{% endblock %}
+
+{% block extra_css %}
+<style>
+    .loop-container {
+        background-color: #2d2d2d;
+        border-radius: 5px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+    
+    .loop-header {
+        border-bottom: 2px solid #800000;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+    }
+    
+    .fragment-card {
+        background-color: #1e1e1e;
+        border-left: 4px solid #007bff;
+        padding: 15px;
+        margin-bottom: 15px;
+        transition: all 0.3s ease;
+    }
+    
+    .fragment-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+    
+    .fragment-card.deceptive {
+        border-left: 4px solid #dc3545;
+    }
+    
+    .pattern-card {
+        background-color: #1e1e1e;
+        border-left: 4px solid #28a745;
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+    
+    .reality-layer {
+        background-color: #1e1e1e;
+        border-left: 4px solid #ffc107;
+        padding: 15px;
+        margin-top: 20px;
+    }
+    
+    .progress-container {
+        margin: 20px 0;
+    }
+    
+    .sharingan-eye {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background: radial-gradient(circle, #800000 0%, #500000 100%);
+        position: relative;
+        margin: 0 auto 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-shadow: 0 0 20px rgba(128, 0, 0, 0.7);
+    }
+    
+    .sharingan-eye::before {
+        content: "";
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #000;
+        position: absolute;
+    }
+    
+    .sharingan-tomoe {
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        background: #000;
+        border-radius: 50%;
+        transform-origin: 50px 50px;
+    }
+    
+    .sharingan-tomoe::after {
+        content: "";
+        position: absolute;
+        width: 20px;
+        height: 30px;
+        background: #000;
+        border-radius: 50%;
+        top: -15px;
+        left: 0;
+    }
+    
+    .sharingan-tomoe:nth-child(1) {
+        transform: rotate(0deg) translateX(30px);
+    }
+    
+    .sharingan-tomoe:nth-child(2) {
+        transform: rotate(120deg) translateX(30px);
+    }
+    
+    .sharingan-tomoe:nth-child(3) {
+        transform: rotate(240deg) translateX(30px);
+    }
+    
+    @keyframes spin {
+        from {
+            transform: rotate(0deg);
+        }
+        to {
+            transform: rotate(360deg);
+        }
+    }
+    
+    .spinning {
+        animation: spin 10s linear infinite;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-10 mx-auto">
+        <div class="loop-container">
+            <div class="loop-header">
+                <h2 class="text-danger">
+                    <i class="fas fa-sync-alt"></i> Izanami Loop Status
+                </h2>
+                <p class="text-muted">Your journey through the endless loop</p>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-4 text-center">
+                    <div class="sharingan-eye {% if is_trapped %}spinning{% endif %}">
+                        <div class="sharingan-tomoe"></div>
+                        <div class="sharingan-tomoe"></div>
+                        <div class="sharingan-tomoe"></div>
+                    </div>
+                    
+                    <h3 class="text-danger">Loop Level: {{ izanami_loop.current_loop }}</h3>
+                    <p>Iterations: {{ izanami_loop.loop_iterations }}</p>
+                    
+                    {% if is_trapped %}
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-triangle"></i> You are trapped in the Izanami Loop
+                        </div>
+                        <p>To escape, you must:</p>
+                        <ul class="text-left">
+                            <li>Complete at least {{ remaining_iterations }} more loop iterations</li>
+                            <li>Recognize {{ remaining_patterns }} more patterns</li>
+                        </ul>
+                    {% else %}
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle"></i> You have broken free from the Izanami Loop
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="col-md-8">
+                    <div class="reality-layer">
+                        <h4><i class="fas fa-layer-group text-warning"></i> Current Reality Layer</h4>
+                        <h5>{{ reality_layer.name }}</h5>
+                        <p>{{ reality_layer.description }}</p>
+                        <div class="alert alert-warning">
+                            <strong>Escape Condition:</strong> {{ reality_layer.escape_condition }}
+                        </div>
+                        
+                        {% if not is_trapped %}
+                            <form id="escape-reality-form" class="mt-3">
+                                {% csrf_token %}
+                                <div class="input-group">
+                                    <input type="text" id="escape-flag-input" class="form-control" placeholder="Enter escape flag...">
+                                    <button class="btn btn-warning" type="submit">Escape</button>
+                                </div>
+                            </form>
+                            <div id="escape-message" class="mt-2"></div>
+                        {% endif %}
+                    </div>
+                    
+                    <h4 class="mt-4"><i class="fas fa-puzzle-piece text-success"></i> Recognized Patterns</h4>
+                    {% if recognized_patterns %}
+                        {% for pattern in recognized_patterns %}
+                            <div class="pattern-card">
+                                <h5>{{ pattern.name }}</h5>
+                                <p>{{ pattern.description }}</p>
+                                <div class="text-muted"><small>Clue: {{ pattern.clue }}</small></div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">You haven't recognized any patterns yet.</p>
+                    {% endif %}
+                    
+                    <form id="pattern-form" class="mt-3">
+                        {% csrf_token %}
+                        <div class="input-group">
+                            <input type="text" id="pattern-flag-input" class="form-control" placeholder="Enter pattern recognition flag...">
+                            <button class="btn btn-success" type="submit">Recognize</button>
+                        </div>
+                    </form>
+                    <div id="pattern-message" class="mt-2"></div>
+                    
+                    <h4 class="mt-4"><i class="fas fa-memory text-primary"></i> Collected Memory Fragments</h4>
+                    {% if collected_fragments %}
+                        <div class="row">
+                            {% for collected in collected_fragments %}
+                                <div class="col-md-6">
+                                    <div class="fragment-card {% if not collected.fragment.is_real %}deceptive{% endif %}">
+                                        <h5>{{ collected.fragment.name }}</h5>
+                                        <p>{{ collected.fragment.description }}</p>
+                                        <div class="text-muted">
+                                            <small>Collected: {{ collected.collected_at|date:"F j, Y, g:i a" }}</small>
+                                        </div>
+                                        {% if collected.fragment.image_url %}
+                                        <div class="mt-2">
+                                            <img src="{{ collected.fragment.image_url }}" alt="{{ collected.fragment.name }}" class="img-fluid rounded" style="max-height: 100px;">
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted">You haven't collected any memory fragments yet.</p>
+                    {% endif %}
+                    
+                    {% if is_trapped and recognized_patterns.count >= 5 and izanami_loop.loop_iterations >= 3 %}
+                        <div class="mt-4 p-3 border border-danger rounded">
+                            <h4 class="text-danger"><i class="fas fa-key"></i> Final Acceptance</h4>
+                            <p>You have recognized all patterns and completed enough iterations. To break free from the Izanami Loop, you must accept reality.</p>
+                            
+                            <form id="acceptance-form">
+                                {% csrf_token %}
+                                <div class="input-group">
+                                    <input type="text" id="acceptance-flag-input" class="form-control" placeholder="Enter acceptance flag...">
+                                    <button class="btn btn-danger" type="submit">Accept Reality</button>
+                                </div>
+                            </form>
+                            <div id="acceptance-message" class="mt-2"></div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // Pattern recognition form
+        $('#pattern-form').on('submit', function(e) {
+            e.preventDefault();
+            
+            const flagInput = $('#pattern-flag-input').val();
+            
+            $.ajax({
+                url: '{% url "core:recognize_pattern" %}',
+                type: 'POST',
+                data: {
+                    'flag': flagInput,
+                    'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+                },
+                success: function(data) {
+                    if (data.success) {
+                        $('#pattern-message').html(
+                            `<div class="alert alert-success alert-dismissible fade show">
+                                ${data.message}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>`
+                        );
+                        
+                        if (data.loop_progressed) {
+                            // Reload the page to update the UI
+                            setTimeout(function() {
+                                location.reload();
+                            }, 2000);
+                        }
+                    } else {
+                        $('#pattern-message').html(
+                            `<div class="alert alert-danger alert-dismissible fade show">
+                                ${data.message}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>`
+                        );
+                    }
+                },
+                error: function() {
+                    $('#pattern-message').html(
+                        `<div class="alert alert-danger alert-dismissible fade show">
+                            An error occurred while submitting the pattern flag.
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>`
+                    );
+                }
+            });
+        });
+        
+        // Escape reality form
+        $('#escape-reality-form').on('submit', function(e) {
+            e.preventDefault();
+            
+            const flagInput = $('#escape-flag-input').val();
+            
+            $.ajax({
+                url: '{% url "core:escape_reality" %}',
+                type: 'POST',
+                data: {
+                    'flag': flagInput,
+                    'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+                },
+                success: function(data) {
+                    if (data.success) {
+                        $('#escape-message').html(
+                            `<div class="alert alert-success alert-dismissible fade show">
+                                ${data.message}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>`
+                        );
+                        
+                        // Reload the page to update the UI
+                        setTimeout(function() {
+                            location.reload();
+                        }, 2000);
+                    } else {
+                        $('#escape-message').html(
+                            `<div class="alert alert-danger alert-dismissible fade show">
+                                ${data.message}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>`
+                        );
+                    }
+                },
+                error: function() {
+                    $('#escape-message').html(
+                        `<div class="alert alert-danger alert-dismissible fade show">
+                            An error occurred while submitting the escape flag.
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>`
+                    );
+                }
+            });
+        });
+        
+        // Acceptance form
+        $('#acceptance-form').on('submit', function(e) {
+            e.preventDefault();
+            
+            const flagInput = $('#acceptance-flag-input').val();
+            
+            $.ajax({
+                url: '{% url "core:accept_reality" %}',
+                type: 'POST',
+                data: {
+                    'flag': flagInput,
+                    'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+                },
+                success: function(data) {
+                    if (data.success) {
+                        $('#acceptance-message').html(
+                            `<div class="alert alert-success alert-dismissible fade show">
+                                ${data.message}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>`
+                        );
+                        
+                        // Reload the page to update the UI
+                        setTimeout(function() {
+                            location.reload();
+                        }, 3000);
+                    } else {
+                        $('#acceptance-message').html(
+                            `<div class="alert alert-danger alert-dismissible fade show">
+                                ${data.message}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>`
+                        );
+                    }
+                },
+                error: function() {
+                    $('#acceptance-message').html(
+                        `<div class="alert alert-danger alert-dismissible fade show">
+                            An error occurred while submitting the acceptance flag.
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>`
+                    );
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

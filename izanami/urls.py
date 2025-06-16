@@ -15,6 +15,8 @@ urlpatterns = [
     path('challenges/', include('challenges.urls')),
     path('scoreboard/', include('scoreboard.urls')),
     path('graphql/', csrf_exempt(GraphQLView.as_view(graphiql=True))),
+    # Add a direct path to izanami-status for compatibility with existing links
+    path('core/izanami-status/', include('core.urls')),
 ]
 
 if settings.DEBUG:

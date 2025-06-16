@@ -1,0 +1,216 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - Izanami: The Endless Loop{% endblock %}
+
+{% block extra_css %}
+<style>
+    .announcement-card {
+        background-color: #1e1e1e;
+        border-left: 4px solid #800000;
+        padding: 15px;
+        margin-bottom: 20px;
+        transition: all 0.3s ease;
+    }
+    
+    .announcement-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+    
+    .hero-section {
+        background-color: #2d2d2d;
+        border-radius: 5px;
+        padding: 40px;
+        margin-bottom: 30px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .hero-section::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(45deg, rgba(128, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
+        pointer-events: none;
+    }
+    
+    .sharingan-bg {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        background: radial-gradient(circle, #800000 0%, #500000 100%);
+        opacity: 0.2;
+        z-index: 0;
+    }
+    
+    .feature-card {
+        background-color: #1e1e1e;
+        border-radius: 5px;
+        padding: 20px;
+        margin-bottom: 20px;
+        height: 100%;
+        transition: all 0.3s ease;
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+    
+    .feature-icon {
+        font-size: 2rem;
+        margin-bottom: 15px;
+        color: #dc3545;
+    }
+    
+    .error-message {
+        display: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="sharingan-bg"></div>
+    <div class="row">
+        <div class="col-lg-8">
+            <h1 class="text-danger">Izanami: The Endless Loop</h1>
+            <p class="lead">A web-based CTF game inspired by Itachi's Sharingan Izanami from Naruto Shippuden.</p>
+            <p>Test your web hacking skills through a series of challenges designed to trap you in an endless loop. Can you break free?</p>
+            
+            {% if user.is_authenticated %}
+                <div class="mt-4">
+                    <a href="/challenges/" class="btn btn-danger me-2">
+                        <i class="fas fa-flag"></i> View Challenges
+                    </a>
+                    <a href="/izanami-status/" class="btn btn-outline-danger">
+                        <i class="fas fa-sync-alt"></i> Izanami Loop Status
+                    </a>
+                </div>
+            {% else %}
+                <div class="mt-4">
+                    <a href="/accounts/login/" class="btn btn-danger me-2">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </a>
+                    <a href="/accounts/register/" class="btn btn-outline-danger">
+                        <i class="fas fa-user-plus"></i> Register
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% if user.is_authenticated and izanami_loop %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-dark">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h4 class="text-danger">
+                                <i class="fas fa-sync-alt"></i> Izanami Loop Status
+                            </h4>
+                            <p>
+                                You are currently in Loop Level {{ izanami_loop.current_loop }} with 
+                                {{ izanami_loop.loop_iterations }} iterations completed.
+                            </p>
+                            <p>
+                                {% if is_trapped %}
+                                    <span class="text-warning">
+                                        <i class="fas fa-exclamation-triangle"></i> You are trapped in the Izanami Loop
+                                    </span>
+                                {% else %}
+                                    <span class="text-success">
+                                        <i class="fas fa-check-circle"></i> You have broken free from the Izanami Loop
+                                    </span>
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <a href="/izanami-status/" class="btn btn-outline-danger">
+                                <i class="fas fa-eye"></i> View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+<div class="row">
+    <div class="col-lg-8">
+        <h3 class="mb-4"><i class="fas fa-bullhorn text-danger"></i> Announcements</h3>
+        
+        {% if announcements %}
+            {% for announcement in announcements %}
+                <div class="announcement-card">
+                    <h4>{{ announcement.title }}</h4>
+                    <p class="text-muted">{{ announcement.created_at|date:"F j, Y" }}</p>
+                    <p>{{ announcement.content }}</p>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="text-muted">No announcements at this time.</p>
+        {% endif %}
+    </div>
+    
+    <div class="col-lg-4">
+        <h3 class="mb-4"><i class="fas fa-info-circle text-danger"></i> Game Features</h3>
+        
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-eye"></i>
+            </div>
+            <h5>Sharingan Points</h5>
+            <p>Earn points by solving challenges. The more difficult the challenge, the more points you earn.</p>
+        </div>
+        
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-fire"></i>
+            </div>
+            <h5>Chakra Meter</h5>
+            <p>Limited attempts for challenges with regeneration over time (10 points per hour).</p>
+        </div>
+        
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-redo-alt"></i>
+            </div>
+            <h5>Genjutsu Counter</h5>
+            <p>Tracks failed attempts as "loops" in the Izanami genjutsu.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // Fix any URL issues
+        $('a[href^="{% url"]').each(function() {
+            var href = $(this).attr('href');
+            if (href.includes('{% url')) {
+                // Replace with hardcoded URL
+                if (href.includes('challenges:index')) {
+                    $(this).attr('href', '/challenges/');
+                } else if (href.includes('core:izanami_status')) {
+                    $(this).attr('href', '/izanami-status/');
+                } else if (href.includes('accounts:login')) {
+                    $(this).attr('href', '/accounts/login/');
+                } else if (href.includes('accounts:register')) {
+                    $(this).attr('href', '/accounts/register/');
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

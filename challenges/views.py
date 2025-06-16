@@ -158,6 +158,23 @@ def challenge_detail(request, challenge_id):
     # Get user's attempts for this challenge
     attempts = ChallengeAttempt.objects.filter(user=request.user, challenge=challenge).order_by('-attempted_at')
     
+    # Get user's Izanami Loop status
+    from core.models import IzanamiLoop
+    izanami_loop, created = IzanamiLoop.objects.get_or_create(
+        user=request.user,
+        defaults={
+            'current_loop': 1,
+            'loop_iterations': 0,
+            'recognized_patterns': '[]',
+            'distortion_level': 0
+        }
+    )
+    
+    # If user is in a high distortion level, redirect to distorted challenge view
+    if izanami_loop.distortion_level >= 2:
+        from django.shortcuts import redirect
+        return redirect('core:distorted_challenge', challenge_id=challenge_id)
+    
     # Prepare context with potentially vulnerable data for XSS challenges
     if challenge.has_xss:
         # Deliberately vulnerable to XSS
@@ -187,6 +204,7 @@ def challenge_detail(request, challenge_id):
         'unlocked_hints': unlocked_hints,
         'attempts': attempts,
         'greeting': greeting,
+        'izanami_loop': izanami_loop,
     }
     return render(request, template_name, context)
 
