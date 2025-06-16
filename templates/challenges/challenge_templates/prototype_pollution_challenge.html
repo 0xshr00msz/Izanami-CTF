@@ -1,0 +1,175 @@
+{% extends 'base.html' %}
+
+{% block title %}Bloodline Limit - Prototype Pollution Challenge{% endblock %}
+
+{% block extra_css %}
+<style>
+    .challenge-container {
+        background-color: #2d2d2d;
+        border-radius: 5px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+    
+    .challenge-header {
+        border-bottom: 2px solid #800000;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+    }
+    
+    .config-container {
+        background-color: #1e1e1e;
+        border-radius: 5px;
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+    
+    .admin-panel {
+        background: linear-gradient(135deg, #800000 0%, #1e1e1e 100%);
+        border-radius: 5px;
+        padding: 20px;
+        margin-top: 20px;
+    }
+    
+    .hint-container {
+        background-color: #1e1e1e;
+        border-left: 4px solid #ffc107;
+        padding: 15px;
+        margin-top: 20px;
+    }
+    
+    .flag-submission {
+        background-color: #1e1e1e;
+        border-radius: 5px;
+        padding: 20px;
+        margin-top: 20px;
+        border-left: 4px solid #dc3545;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div id="prototype-pollution-challenge" class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="challenge-container">
+            <div class="challenge-header">
+                <h2 class="text-danger">Uchiha Clan Configuration Portal</h2>
+                <p class="text-muted">Customize your user experience with the configuration system.</p>
+            </div>
+            
+            <div id="prototype-message"></div>
+            <div id="prototype-flag-message"></div>
+            
+            <div class="config-container">
+                <h5>Current Configuration</h5>
+                <div id="config-display"></div>
+            </div>
+            
+            <div class="card bg-dark mb-4">
+                <div class="card-header bg-dark">
+                    <h5 class="mb-0">Update Configuration</h5>
+                </div>
+                <div class="card-body">
+                    <form id="config-form">
+                        <div class="mb-3">
+                            <label for="config-input" class="form-label">JSON Configuration</label>
+                            <textarea class="form-control" id="config-input" rows="5" placeholder='{"theme": "dark", "username": "your_name"}'></textarea>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-danger">Update Configuration</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div id="admin-panel" class="admin-panel d-none">
+                <h4 class="text-white"><i class="fas fa-lock-open"></i> Admin Panel Unlocked</h4>
+                <p class="text-white">Congratulations! You've gained access to the admin panel.</p>
+                <p class="text-white">This would normally be restricted to administrators only.</p>
+            </div>
+            
+            <div class="mt-4">
+                <button id="prototype-hint-btn" class="btn btn-sm btn-outline-warning">
+                    <i class="fas fa-lightbulb"></i> Show Hint
+                </button>
+                <button id="prototype-example-btn" class="btn btn-sm btn-outline-info ms-2">
+                    <i class="fas fa-code"></i> Show Example
+                </button>
+            </div>
+            
+            <div id="prototype-hint-content" class="hint-container d-none">
+                <h5><i class="fas fa-lightbulb text-warning"></i> Hint</h5>
+                <p>Prototype pollution is a vulnerability that occurs when an attacker is able to add or modify properties to the Object prototype.</p>
+                <p>The configuration system uses a vulnerable merge function that doesn't properly check for special properties like <code>__proto__</code>.</p>
+                <p>Try adding a property to the Object prototype that would make the system think you're an admin.</p>
+                <p>The admin check looks for <code>window.config.isAdmin === true</code>.</p>
+            </div>
+            
+            <!-- Flag Submission Form -->
+            <div class="flag-submission">
+                <h5><i class="fas fa-flag text-danger"></i> Submit Flag</h5>
+                <form id="flag-form" data-challenge-id="{{ challenge.id }}">
+                    {% csrf_token %}
+                    <div class="input-group">
+                        <input type="text" id="flag-input" class="form-control" placeholder="Enter flag here...">
+                        <button class="btn btn-danger" type="submit">Submit</button>
+                    </div>
+                    <small class="text-muted mt-2 d-block">
+                        <i class="fas fa-fire text-primary"></i> Chakra cost: {{ challenge.chakra_cost }}
+                    </small>
+                </form>
+                <div id="flag-message" class="mt-3"></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="/static/js/challenge-specific/prototype-pollution-challenge.js"></script>
+<script>
+    $(document).ready(function() {
+        // Flag submission handler
+        $('#flag-form').on('submit', function(e) {
+            e.preventDefault();
+            
+            const challengeId = $(this).data('challenge-id');
+            const flagInput = $('#flag-input').val();
+            
+            $.ajax({
+                url: `/challenges/${challengeId}/submit/`,
+                type: 'POST',
+                data: {
+                    'flag': flagInput,
+                    'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+                },
+                success: function(data) {
+                    if (data.success) {
+                        $('#flag-message').html(
+                            `<div class="alert alert-success alert-dismissible fade show">
+                                ${data.message}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>`
+                        );
+                    } else {
+                        $('#flag-message').html(
+                            `<div class="alert alert-danger alert-dismissible fade show">
+                                ${data.message}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>`
+                        );
+                    }
+                },
+                error: function() {
+                    $('#flag-message').html(
+                        `<div class="alert alert-danger alert-dismissible fade show">
+                            An error occurred while submitting your flag.
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>`
+                    );
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+{% load challenge_filters %}
+
+{% block title %}Challenges - Izanami CTF{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card bg-dark border-danger">
+            <div class="card-body">
+                <h2 class="card-title text-danger">
+                    <i class="fas fa-flag"></i> Challenges
+                </h2>
+                <p class="card-text">
+                    Welcome to the Izanami challenges. Break free from the endless loop by solving these web security challenges.
+                    Progress through the difficulty levels from Academy to Uchiha to prove your skills.
+                </p>
+                
+                <div class="mt-3">
+                    <div class="btn-group" role="group">
+                        <a href="{% url 'challenges:academy' %}" class="btn btn-outline-success">Academy</a>
+                        <a href="{% url 'challenges:chunin' %}" class="btn btn-outline-info">Chunin</a>
+                        <a href="{% url 'challenges:jonin' %}" class="btn btn-outline-warning">Jōnin</a>
+                        <a href="{% url 'challenges:uchiha' %}" class="btn btn-outline-danger">Uchiha</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card bg-dark">
+            <div class="card-header bg-dark">
+                <h5 class="mb-0">Challenge Categories</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for category in categories %}
+                    <div class="col-md-3 col-sm-6 mb-3">
+                        <div class="card bg-dark h-100 border-secondary">
+                            <div class="card-body text-center">
+                                <i class="fas {{ category.icon }} fa-2x mb-3 text-{{ category.name|lower }}"></i>
+                                <h5>{{ category.name }}</h5>
+                                <p class="small text-muted">{{ category.description|truncatechars:60 }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card bg-dark">
+            <div class="card-header bg-dark">
+                <ul class="nav nav-tabs card-header-tabs" id="difficulty-tabs" role="tablist">
+                    {% for level in difficulty_levels %}
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link {% if forloop.first %}active{% endif %}" 
+                                id="{{ level.name|lower }}-tab" 
+                                data-bs-toggle="tab" 
+                                data-bs-target="#{{ level.name|lower }}" 
+                                type="button" 
+                                role="tab">
+                            {{ level.name }}
+                        </button>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="tab-content" id="difficulty-content">
+                    {% for level in difficulty_levels %}
+                    <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" 
+                         id="{{ level.name|lower }}" 
+                         role="tabpanel">
+                        
+                        <div class="mb-3">
+                            <h5>{{ level.name }} Level Challenges</h5>
+                            <p>{{ level.description }}</p>
+                        </div>
+                        
+                        <div class="table-responsive">
+                            <table class="table table-dark table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Challenge</th>
+                                        <th>Category</th>
+                                        <th>Points</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for challenge in difficulty_challenges|get_dict_item:level.id %}
+                                    <tr class="{% if challenge.id in solved_challenges %}table-success{% endif %}">
+                                        <td>
+                                            <a href="{% url 'challenges:detail' challenge.id %}" class="text-decoration-none">
+                                                {{ challenge.title }}
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <span class="category-badge category-{{ challenge.category.name|lower }}">
+                                                {{ challenge.category.name }}
+                                            </span>
+                                        </td>
+                                        <td>{{ challenge.points }}</td>
+                                        <td>
+                                            {% if challenge.id in solved_challenges %}
+                                            <span class="badge bg-success">Solved</span>
+                                            {% else %}
+                                            <span class="badge bg-secondary">Unsolved</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="4" class="text-center">No challenges available for this level.</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,277 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ challenge.title }} - Izanami CTF{% endblock %}
+
+{% block extra_css %}
+<style>
+    .challenge-header {
+        background: linear-gradient(to right, #800000, #1e1e1e);
+        padding: 20px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+    }
+    
+    .challenge-description {
+        background-color: #2d2d2d;
+        padding: 20px;
+        border-radius: 5px;
+        border-left: 4px solid #800000;
+    }
+    
+    .hint-card {
+        background-color: #2d2d2d;
+        border: 1px solid #444;
+    }
+    
+    .attempts-list {
+        max-height: 300px;
+        overflow-y: auto;
+    }
+    
+    .websocket-container {
+        background-color: #2d2d2d;
+        border: 1px solid #444;
+        border-radius: 5px;
+        padding: 15px;
+    }
+    
+    .websocket-messages {
+        height: 200px;
+        overflow-y: auto;
+        background-color: #1e1e1e;
+        border: 1px solid #444;
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+    }
+    
+    .message {
+        margin-bottom: 5px;
+        padding: 5px;
+        border-bottom: 1px solid #333;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div id="challenge-detail" data-challenge-id="{{ challenge.id }}" data-has-websocket="{{ challenge.has_websocket_vulnerability|yesno:'true,false' }}">
+    <div class="challenge-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <h2 class="text-white mb-0">{{ challenge.title }}</h2>
+            <div>
+                <span class="badge bg-primary me-2">{{ challenge.points }} Points</span>
+                <span class="badge 
+                    {% if challenge.difficulty.name == 'Academy' %}bg-success{% endif %}
+                    {% if challenge.difficulty.name == 'Chunin' %}bg-info{% endif %}
+                    {% if challenge.difficulty.name == 'Jōnin' %}bg-warning{% endif %}
+                    {% if challenge.difficulty.name == 'Uchiha' %}bg-danger{% endif %}
+                ">{{ challenge.difficulty.name }}</span>
+            </div>
+        </div>
+        <div class="mt-2">
+            <span class="category-badge category-{{ challenge.category.name|lower }}">{{ challenge.category.name }}</span>
+            {% if solved %}
+                <span class="badge bg-success ms-2">Solved</span>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card bg-dark mb-4">
+                <div class="card-header bg-dark">
+                    <h5 class="mb-0">Challenge Description</h5>
+                </div>
+                <div class="card-body challenge-description">
+                    {{ challenge.description|linebreaks }}
+                    
+                    {% if greeting %}
+                    <div class="alert alert-info mt-3">
+                        {{ greeting }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            {% if challenge.has_websocket_vulnerability %}
+            <div class="card bg-dark mb-4">
+                <div class="card-header bg-dark">
+                    <h5 class="mb-0">WebSocket Communication</h5>
+                    <small class="text-muted">Status: <span id="websocket-status" class="text-danger">Disconnected</span></small>
+                </div>
+                <div class="card-body websocket-container">
+                    <div id="websocket-messages" class="websocket-messages"></div>
+                    <form id="websocket-form">
+                        <div class="input-group mb-2">
+                            <input type="text" id="websocket-username" class="form-control" placeholder="Username">
+                            <input type="text" id="websocket-input" class="form-control" placeholder="Type your message...">
+                            <button class="btn btn-danger" type="submit">Send</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+            
+            {% if not solved %}
+            <div class="card bg-dark mb-4">
+                <div class="card-header bg-dark">
+                    <h5 class="mb-0">Submit Flag</h5>
+                </div>
+                <div class="card-body">
+                    <form id="flag-form" data-challenge-id="{{ challenge.id }}">
+                        {% csrf_token %}
+                        <div class="input-group">
+                            <input type="text" id="flag-input" class="form-control" placeholder="Enter flag here...">
+                            <button class="btn btn-danger" type="submit">Submit</button>
+                        </div>
+                        <small class="text-muted mt-2 d-block">
+                            <i class="fas fa-fire text-primary"></i> Chakra cost: {{ challenge.chakra_cost }}
+                        </small>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="col-lg-4">
+            {% if hints %}
+            <div class="card bg-dark mb-4">
+                <div class="card-header bg-dark">
+                    <h5 class="mb-0">Hints</h5>
+                </div>
+                <div class="card-body p-0">
+                    {% for hint in hints %}
+                    <div class="hint-card p-3 {% if not forloop.last %}border-bottom{% endif %}">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h6 class="mb-0">Hint #{{ forloop.counter }}</h6>
+                            <span class="badge bg-primary">
+                                <i class="fas fa-fire"></i> {{ hint.chakra_cost }}
+                            </span>
+                        </div>
+                        
+                        {% if hint.id in unlocked_hints %}
+                        <div id="hint-content-{{ hint.id }}">
+                            {{ hint.content }}
+                        </div>
+                        {% else %}
+                        <div id="hint-content-{{ hint.id }}" class="d-none"></div>
+                        <button class="btn btn-sm btn-outline-danger hint-button" 
+                                data-hint-id="{{ hint.id }}" 
+                                data-challenge-id="{{ challenge.id }}">
+                            Unlock Hint
+                        </button>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+            
+            <div class="card bg-dark mb-4">
+                <div class="card-header bg-dark">
+                    <h5 class="mb-0">Your Attempts</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="attempts-list">
+                        {% if attempts %}
+                            <ul class="list-group list-group-flush">
+                                {% for attempt in attempts %}
+                                <li class="list-group-item bg-dark text-light">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <span class="badge {% if attempt.is_correct %}bg-success{% else %}bg-danger{% endif %} me-2">
+                                                {% if attempt.is_correct %}✓{% else %}✗{% endif %}
+                                            </span>
+                                            <code>{{ attempt.submitted_flag }}</code>
+                                        </div>
+                                        <small class="text-muted">{{ attempt.attempted_at|date:"H:i:s" }}</small>
+                                    </div>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <div class="p-3 text-center text-muted">
+                                No attempts yet
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card bg-dark">
+                <div class="card-header bg-dark">
+                    <h5 class="mb-0">Challenge Info</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item bg-dark text-light d-flex justify-content-between">
+                            <span>Category:</span>
+                            <span>{{ challenge.category.name }}</span>
+                        </li>
+                        <li class="list-group-item bg-dark text-light d-flex justify-content-between">
+                            <span>Difficulty:</span>
+                            <span>{{ challenge.difficulty.name }}</span>
+                        </li>
+                        <li class="list-group-item bg-dark text-light d-flex justify-content-between">
+                            <span>Points:</span>
+                            <span>{{ challenge.points }}</span>
+                        </li>
+                        <li class="list-group-item bg-dark text-light d-flex justify-content-between">
+                            <span>Chakra Cost:</span>
+                            <span>{{ challenge.chakra_cost }}</span>
+                        </li>
+                        <li class="list-group-item bg-dark text-light d-flex justify-content-between">
+                            <span>Created by:</span>
+                            <span>0xshr00msz</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // Challenge-specific JavaScript can be added here
+        
+        {% if challenge.has_xss %}
+        // Deliberately vulnerable code for XSS challenges
+        function displayUserInput() {
+            const userInput = new URLSearchParams(window.location.search).get('name');
+            if (userInput) {
+                document.getElementById('user-greeting').innerHTML = 'Hello, ' + userInput + '!';
+            }
+        }
+        displayUserInput();
+        {% endif %}
+        
+        {% if challenge.has_prototype_pollution %}
+        // Deliberately vulnerable code for prototype pollution challenges
+        function parseUserData() {
+            const userData = new URLSearchParams(window.location.search).get('user_data');
+            if (userData) {
+                try {
+                    const parsedData = JSON.parse(userData);
+                    const userConfig = {};
+                    
+                    // Vulnerable merge function
+                    for (const key in parsedData) {
+                        if (parsedData.hasOwnProperty(key)) {
+                            userConfig[key] = parsedData[key];
+                        }
+                    }
+                    
+                    console.log('User configuration loaded:', userConfig);
+                } catch (e) {
+                    console.error('Failed to parse user data:', e);
+                }
+            }
+        }
+        parseUserData();
+        {% endif %}
+    });
+</script>
+{% endblock %}

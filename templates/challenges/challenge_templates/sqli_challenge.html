@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+
+{% block title %}Login Bypass - SQL Injection Challenge{% endblock %}
+
+{% block extra_css %}
+<style>
+    .challenge-container {
+        background-color: #2d2d2d;
+        border-radius: 5px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+    
+    .challenge-header {
+        border-bottom: 2px solid #800000;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+    }
+    
+    .hint-container {
+        background-color: #1e1e1e;
+        border-left: 4px solid #ffc107;
+        padding: 15px;
+        margin-top: 20px;
+    }
+    
+    .flag-submission {
+        background-color: #1e1e1e;
+        border-radius: 5px;
+        padding: 20px;
+        margin-top: 20px;
+        border-left: 4px solid #dc3545;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div id="sqli-challenge" class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="challenge-container">
+            <div class="challenge-header">
+                <h2 class="text-danger">Academy Login Portal</h2>
+                <p class="text-muted">Can you bypass the login and access the admin area?</p>
+            </div>
+            
+            <div id="sqli-message"></div>
+            
+            <div class="card bg-dark mb-4">
+                <div class="card-body">
+                    <form id="sqli-login-form">
+                        <div class="mb-3">
+                            <label for="username-input" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="username-input" placeholder="Enter username">
+                        </div>
+                        <div class="mb-3">
+                            <label for="password-input" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password-input" placeholder="Enter password">
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-danger">Login</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div id="sql-query-display"></div>
+            
+            <div class="mt-4">
+                <button id="sqli-hint-btn" class="btn btn-sm btn-outline-warning">
+                    <i class="fas fa-lightbulb"></i> Show Hint
+                </button>
+                <button id="sqli-example-btn" class="btn btn-sm btn-outline-info ms-2">
+                    <i class="fas fa-code"></i> Show Example
+                </button>
+            </div>
+            
+            <div id="sqli-hint-content" class="hint-container d-none">
+                <h5><i class="fas fa-lightbulb text-warning"></i> Hint</h5>
+                <p>SQL injection is a technique where an attacker can inject malicious SQL code into queries that an application makes to its database.</p>
+                <p>The login query might look something like this:</p>
+                <pre><code>SELECT * FROM users WHERE username = '[INPUT]' AND password = '[INPUT]'</code></pre>
+                <p>Can you manipulate the input to make the query always return true?</p>
+                <p>Try using SQL comment syntax (--) to ignore the rest of the query.</p>
+            </div>
+            
+            <!-- Flag Submission Form -->
+            <div class="flag-submission">
+                <h5><i class="fas fa-flag text-danger"></i> Submit Flag</h5>
+                <form id="flag-form" data-challenge-id="{{ challenge.id }}">
+                    {% csrf_token %}
+                    <div class="input-group">
+                        <input type="text" id="flag-input" class="form-control" placeholder="Enter flag here...">
+                        <button class="btn btn-danger" type="submit">Submit</button>
+                    </div>
+                    <small class="text-muted mt-2 d-block">
+                        <i class="fas fa-fire text-primary"></i> Chakra cost: {{ challenge.chakra_cost }}
+                    </small>
+                </form>
+                <div id="flag-message" class="mt-3"></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="/static/js/challenge-specific/sqli-challenge.js"></script>
+<script>
+    $(document).ready(function() {
+        // Flag submission handler
+        $('#flag-form').on('submit', function(e) {
+            e.preventDefault();
+            
+            const challengeId = $(this).data('challenge-id');
+            const flagInput = $('#flag-input').val();
+            
+            $.ajax({
+                url: `/challenges/${challengeId}/submit/`,
+                type: 'POST',
+                data: {
+                    'flag': flagInput,
+                    'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+                },
+                success: function(data) {
+                    if (data.success) {
+                        $('#flag-message').html(
+                            `<div class="alert alert-success alert-dismissible fade show">
+                                ${data.message}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>`
+                        );
+                    } else {
+                        $('#flag-message').html(
+                            `<div class="alert alert-danger alert-dismissible fade show">
+                                ${data.message}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>`
+                        );
+                    }
+                },
+                error: function() {
+                    $('#flag-message').html(
+                        `<div class="alert alert-danger alert-dismissible fade show">
+                            An error occurred while submitting your flag.
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>`
+                    );
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

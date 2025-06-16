@@ -1,0 +1,718 @@
+[
+  {
+    "model": "core.gamesettings",
+    "pk": 1,
+    "fields": {
+      "game_name": "Izanami: The Endless Loop",
+      "game_description": "A web-based CTF game inspired by Itachi's Sharingan Izanami from Naruto Shippuden.",
+      "is_active": true,
+      "registration_open": true,
+      "start_time": "2025-06-01T00:00:00Z",
+      "end_time": "2025-08-31T23:59:59Z"
+    }
+  },
+  {
+    "model": "core.announcement",
+    "pk": 1,
+    "fields": {
+      "title": "Welcome to Izanami CTF!",
+      "content": "Welcome to Izanami: The Endless Loop! This CTF game is designed to test your web hacking skills through a series of challenges inspired by Itachi's Sharingan Izanami technique. Break free from the loop by solving challenges and earning Sharingan points. Good luck!",
+      "created_at": "2025-06-01T00:00:00Z",
+      "is_visible": true
+    }
+  },
+  {
+    "model": "core.announcement",
+    "pk": 2,
+    "fields": {
+      "title": "New Challenges Released",
+      "content": "We've just released a new set of challenges in the Chunin level. These challenges focus on API vulnerabilities and WebSocket exploitation. Test your skills and earn more Sharingan points!",
+      "created_at": "2025-06-10T12:00:00Z",
+      "is_visible": true
+    }
+  },
+  {
+    "model": "challenges.difficultylevel",
+    "pk": 1,
+    "fields": {
+      "name": "Academy",
+      "description": "Beginner-level challenges designed to introduce you to basic web vulnerabilities.",
+      "order": 1
+    }
+  },
+  {
+    "model": "challenges.difficultylevel",
+    "pk": 2,
+    "fields": {
+      "name": "Chunin",
+      "description": "Intermediate challenges that require a deeper understanding of web security concepts.",
+      "order": 2
+    }
+  },
+  {
+    "model": "challenges.difficultylevel",
+    "pk": 3,
+    "fields": {
+      "name": "Jōnin",
+      "description": "Advanced challenges that often require chaining multiple vulnerabilities together.",
+      "order": 3
+    }
+  },
+  {
+    "model": "challenges.difficultylevel",
+    "pk": 4,
+    "fields": {
+      "name": "Uchiha",
+      "description": "Expert-level challenges that require mastery of multiple attack vectors and creative thinking.",
+      "order": 4
+    }
+  },
+  {
+    "model": "challenges.challengecategory",
+    "pk": 1,
+    "fields": {
+      "name": "SQL Injection",
+      "description": "Challenges focused on exploiting SQL injection vulnerabilities to extract data or bypass authentication.",
+      "icon": "fa-database"
+    }
+  },
+  {
+    "model": "challenges.challengecategory",
+    "pk": 2,
+    "fields": {
+      "name": "XSS",
+      "description": "Cross-Site Scripting challenges that test your ability to inject and execute malicious JavaScript.",
+      "icon": "fa-code"
+    }
+  },
+  {
+    "model": "challenges.challengecategory",
+    "pk": 3,
+    "fields": {
+      "name": "CSRF",
+      "description": "Cross-Site Request Forgery challenges that involve tricking users into performing unwanted actions.",
+      "icon": "fa-random"
+    }
+  },
+  {
+    "model": "challenges.challengecategory",
+    "pk": 4,
+    "fields": {
+      "name": "File Upload",
+      "description": "Challenges that involve exploiting file upload vulnerabilities to achieve code execution.",
+      "icon": "fa-file-upload"
+    }
+  },
+  {
+    "model": "challenges.challengecategory",
+    "pk": 5,
+    "fields": {
+      "name": "SSRF",
+      "description": "Server-Side Request Forgery challenges that involve making the server request internal resources.",
+      "icon": "fa-server"
+    }
+  },
+  {
+    "model": "challenges.challengecategory",
+    "pk": 6,
+    "fields": {
+      "name": "Command Injection",
+      "description": "Challenges that involve injecting OS commands into vulnerable applications.",
+      "icon": "fa-terminal"
+    }
+  },
+  {
+    "model": "challenges.challengecategory",
+    "pk": 7,
+    "fields": {
+      "name": "Deserialization",
+      "description": "Challenges focused on exploiting insecure deserialization to achieve code execution.",
+      "icon": "fa-box-open"
+    }
+  },
+  {
+    "model": "challenges.challengecategory",
+    "pk": 8,
+    "fields": {
+      "name": "WebSocket",
+      "description": "Challenges that involve exploiting vulnerabilities in WebSocket connections.",
+      "icon": "fa-plug"
+    }
+  },
+  {
+    "model": "challenges.challengecategory",
+    "pk": 9,
+    "fields": {
+      "name": "API",
+      "description": "Challenges focused on finding and exploiting vulnerabilities in web APIs.",
+      "icon": "fa-project-diagram"
+    }
+  },
+  {
+    "model": "challenges.challengecategory",
+    "pk": 10,
+    "fields": {
+      "name": "GraphQL",
+      "description": "Challenges that involve exploiting vulnerabilities in GraphQL implementations.",
+      "icon": "fa-sitemap"
+    }
+  },
+  {
+    "model": "challenges.challengecategory",
+    "pk": 11,
+    "fields": {
+      "name": "Race Condition",
+      "description": "Challenges that involve exploiting timing vulnerabilities in web applications.",
+      "icon": "fa-clock"
+    }
+  },
+  {
+    "model": "challenges.challengecategory",
+    "pk": 12,
+    "fields": {
+      "name": "Prototype Pollution",
+      "description": "Challenges focused on exploiting JavaScript prototype pollution vulnerabilities.",
+      "icon": "fa-code-branch"
+    }
+  },
+  {
+    "model": "challenges.challenge",
+    "pk": 1,
+    "fields": {
+      "title": "Login Bypass",
+      "description": "The Academy entrance exam requires you to log in as an administrator. Can you bypass the login form?\n\nHint: The query might be vulnerable to SQL injection.",
+      "category": 1,
+      "difficulty": 1,
+      "points": 100,
+      "flag": "izanami{sql_1nj3ct10n_b4s1cs}",
+      "is_active": true,
+      "created_at": "2025-06-01T00:00:00Z",
+      "updated_at": "2025-06-01T00:00:00Z",
+      "requires_authentication": true,
+      "chakra_cost": 5,
+      "hint_available": true,
+      "has_xss": false,
+      "has_sqli": true,
+      "has_csrf": false,
+      "has_file_upload": false,
+      "has_ssrf": false,
+      "has_command_injection": false,
+      "has_insecure_deserialization": false,
+      "has_websocket_vulnerability": false,
+      "has_api_vulnerability": false,
+      "has_graphql_vulnerability": false,
+      "has_race_condition": false,
+      "has_prototype_pollution": false
+    }
+  },
+  {
+    "model": "challenges.challenge",
+    "pk": 2,
+    "fields": {
+      "title": "Greeting Card",
+      "description": "The Academy has a greeting card system for new students. Can you find a way to execute JavaScript on this page?\n\nTry using the 'name' parameter in the URL.",
+      "category": 2,
+      "difficulty": 1,
+      "points": 150,
+      "flag": "izanami{cr0ss_s1t3_scr1pt1ng_101}",
+      "is_active": true,
+      "created_at": "2025-06-01T00:00:00Z",
+      "updated_at": "2025-06-01T00:00:00Z",
+      "requires_authentication": true,
+      "chakra_cost": 5,
+      "hint_available": true,
+      "has_xss": true,
+      "has_sqli": false,
+      "has_csrf": false,
+      "has_file_upload": false,
+      "has_ssrf": false,
+      "has_command_injection": false,
+      "has_insecure_deserialization": false,
+      "has_websocket_vulnerability": false,
+      "has_api_vulnerability": false,
+      "has_graphql_vulnerability": false,
+      "has_race_condition": false,
+      "has_prototype_pollution": false
+    }
+  },
+  {
+    "model": "challenges.challenge",
+    "pk": 3,
+    "fields": {
+      "title": "Profile Update",
+      "description": "The Academy allows students to update their profiles. Can you find a way to make an administrator update their profile without their knowledge?\n\nHint: The form might be missing something important.",
+      "category": 3,
+      "difficulty": 1,
+      "points": 200,
+      "flag": "izanami{csrf_t0k3ns_m4tt3r}",
+      "is_active": true,
+      "created_at": "2025-06-01T00:00:00Z",
+      "updated_at": "2025-06-01T00:00:00Z",
+      "requires_authentication": true,
+      "chakra_cost": 10,
+      "hint_available": true,
+      "has_xss": false,
+      "has_sqli": false,
+      "has_csrf": true,
+      "has_file_upload": false,
+      "has_ssrf": false,
+      "has_command_injection": false,
+      "has_insecure_deserialization": false,
+      "has_websocket_vulnerability": false,
+      "has_api_vulnerability": false,
+      "has_graphql_vulnerability": false,
+      "has_race_condition": false,
+      "has_prototype_pollution": false
+    }
+  },
+  {
+    "model": "challenges.challenge",
+    "pk": 4,
+    "fields": {
+      "title": "Scroll Repository",
+      "description": "The Academy has a repository for storing training scrolls. Can you upload a malicious file to gain access to the server?\n\nHint: The file upload system doesn't properly validate file types.",
+      "category": 4,
+      "difficulty": 2,
+      "points": 250,
+      "flag": "izanami{f1l3_upl04d_byp4ss}",
+      "is_active": true,
+      "created_at": "2025-06-01T00:00:00Z",
+      "updated_at": "2025-06-01T00:00:00Z",
+      "requires_authentication": true,
+      "chakra_cost": 15,
+      "hint_available": true,
+      "has_xss": false,
+      "has_sqli": false,
+      "has_csrf": false,
+      "has_file_upload": true,
+      "has_ssrf": false,
+      "has_command_injection": false,
+      "has_insecure_deserialization": false,
+      "has_websocket_vulnerability": false,
+      "has_api_vulnerability": false,
+      "has_graphql_vulnerability": false,
+      "has_race_condition": false,
+      "has_prototype_pollution": false
+    }
+  },
+  {
+    "model": "challenges.challenge",
+    "pk": 5,
+    "fields": {
+      "title": "Weather Checker",
+      "description": "The Chunin exam includes a weather checking service. Can you make it fetch data from internal services?\n\nHint: The service makes HTTP requests based on user input.",
+      "category": 5,
+      "difficulty": 2,
+      "points": 300,
+      "flag": "izanami{ssrf_1nt3rn4l_s3rv1c3s}",
+      "is_active": true,
+      "created_at": "2025-06-01T00:00:00Z",
+      "updated_at": "2025-06-01T00:00:00Z",
+      "requires_authentication": true,
+      "chakra_cost": 20,
+      "hint_available": true,
+      "has_xss": false,
+      "has_sqli": false,
+      "has_csrf": false,
+      "has_file_upload": false,
+      "has_ssrf": true,
+      "has_command_injection": false,
+      "has_insecure_deserialization": false,
+      "has_websocket_vulnerability": false,
+      "has_api_vulnerability": false,
+      "has_graphql_vulnerability": false,
+      "has_race_condition": false,
+      "has_prototype_pollution": false
+    }
+  },
+  {
+    "model": "challenges.challenge",
+    "pk": 6,
+    "fields": {
+      "title": "Network Ping",
+      "description": "The Chunin exam includes a network diagnostic tool. Can you execute arbitrary commands on the server?\n\nHint: The tool uses user input to construct a command line.",
+      "category": 6,
+      "difficulty": 2,
+      "points": 350,
+      "flag": "izanami{c0mm4nd_1nj3ct10n_m4st3r}",
+      "is_active": true,
+      "created_at": "2025-06-01T00:00:00Z",
+      "updated_at": "2025-06-01T00:00:00Z",
+      "requires_authentication": true,
+      "chakra_cost": 25,
+      "hint_available": true,
+      "has_xss": false,
+      "has_sqli": false,
+      "has_csrf": false,
+      "has_file_upload": false,
+      "has_ssrf": false,
+      "has_command_injection": true,
+      "has_insecure_deserialization": false,
+      "has_websocket_vulnerability": false,
+      "has_api_vulnerability": false,
+      "has_graphql_vulnerability": false,
+      "has_race_condition": false,
+      "has_prototype_pollution": false
+    }
+  },
+  {
+    "model": "challenges.challenge",
+    "pk": 7,
+    "fields": {
+      "title": "Jutsu Storage",
+      "description": "The Jōnin exam includes a system for storing jutsu techniques. Can you exploit the deserialization process to execute code?\n\nHint: The system uses pickle for serialization.",
+      "category": 7,
+      "difficulty": 3,
+      "points": 450,
+      "flag": "izanami{p1ckl3_d3s3r14l1z4t10n_rce}",
+      "is_active": true,
+      "created_at": "2025-06-01T00:00:00Z",
+      "updated_at": "2025-06-01T00:00:00Z",
+      "requires_authentication": true,
+      "chakra_cost": 30,
+      "hint_available": true,
+      "has_xss": false,
+      "has_sqli": false,
+      "has_csrf": false,
+      "has_file_upload": false,
+      "has_ssrf": false,
+      "has_command_injection": false,
+      "has_insecure_deserialization": true,
+      "has_websocket_vulnerability": false,
+      "has_api_vulnerability": false,
+      "has_graphql_vulnerability": false,
+      "has_race_condition": false,
+      "has_prototype_pollution": false
+    }
+  },
+  {
+    "model": "challenges.challenge",
+    "pk": 8,
+    "fields": {
+      "title": "Telepathic Communication",
+      "description": "The Jōnin exam includes a telepathic communication system using WebSockets. Can you exploit vulnerabilities in the WebSocket connection?\n\nHint: The system doesn't properly validate messages or authenticate users.",
+      "category": 8,
+      "difficulty": 3,
+      "points": 500,
+      "flag": "izanami{w3bs0ck3t_vuln3r4b1l1ty}",
+      "is_active": true,
+      "created_at": "2025-06-01T00:00:00Z",
+      "updated_at": "2025-06-01T00:00:00Z",
+      "requires_authentication": true,
+      "chakra_cost": 35,
+      "hint_available": true,
+      "has_xss": false,
+      "has_sqli": false,
+      "has_csrf": false,
+      "has_file_upload": false,
+      "has_ssrf": false,
+      "has_command_injection": false,
+      "has_insecure_deserialization": false,
+      "has_websocket_vulnerability": true,
+      "has_api_vulnerability": false,
+      "has_graphql_vulnerability": false,
+      "has_race_condition": false,
+      "has_prototype_pollution": false
+    }
+  },
+  {
+    "model": "challenges.challenge",
+    "pk": 9,
+    "fields": {
+      "title": "Ninja Registry",
+      "description": "The Uchiha clan maintains a registry of all ninjas. Can you exploit the API to access unauthorized data?\n\nHint: The API has broken access controls.",
+      "category": 9,
+      "difficulty": 4,
+      "points": 700,
+      "flag": "izanami{4p1_4cc3ss_c0ntr0l_byp4ss}",
+      "is_active": true,
+      "created_at": "2025-06-01T00:00:00Z",
+      "updated_at": "2025-06-01T00:00:00Z",
+      "requires_authentication": true,
+      "chakra_cost": 40,
+      "hint_available": true,
+      "has_xss": false,
+      "has_sqli": false,
+      "has_csrf": false,
+      "has_file_upload": false,
+      "has_ssrf": false,
+      "has_command_injection": false,
+      "has_insecure_deserialization": false,
+      "has_websocket_vulnerability": false,
+      "has_api_vulnerability": true,
+      "has_graphql_vulnerability": false,
+      "has_race_condition": false,
+      "has_prototype_pollution": false
+    }
+  },
+  {
+    "model": "challenges.challenge",
+    "pk": 10,
+    "fields": {
+      "title": "Sharingan Database",
+      "description": "The Uchiha clan uses a GraphQL API to query their Sharingan database. Can you exploit vulnerabilities in the GraphQL implementation?\n\nHint: Try introspection and nested queries.",
+      "category": 10,
+      "difficulty": 4,
+      "points": 800,
+      "flag": "izanami{gr4phql_1ntr0sp3ct10n_m4st3r}",
+      "is_active": true,
+      "created_at": "2025-06-01T00:00:00Z",
+      "updated_at": "2025-06-01T00:00:00Z",
+      "requires_authentication": true,
+      "chakra_cost": 45,
+      "hint_available": true,
+      "has_xss": false,
+      "has_sqli": false,
+      "has_csrf": false,
+      "has_file_upload": false,
+      "has_ssrf": false,
+      "has_command_injection": false,
+      "has_insecure_deserialization": false,
+      "has_websocket_vulnerability": false,
+      "has_api_vulnerability": false,
+      "has_graphql_vulnerability": true,
+      "has_race_condition": false,
+      "has_prototype_pollution": false
+    }
+  },
+  {
+    "model": "challenges.challenge",
+    "pk": 11,
+    "fields": {
+      "title": "Time-Space Ninjutsu",
+      "description": "The Uchiha clan has developed a time-space ninjutsu system. Can you exploit race conditions in the implementation?\n\nHint: Try making multiple requests simultaneously.",
+      "category": 11,
+      "difficulty": 4,
+      "points": 900,
+      "flag": "izanami{r4c3_c0nd1t10n_t1m1ng_4tt4ck}",
+      "is_active": true,
+      "created_at": "2025-06-01T00:00:00Z",
+      "updated_at": "2025-06-01T00:00:00Z",
+      "requires_authentication": true,
+      "chakra_cost": 50,
+      "hint_available": true,
+      "has_xss": false,
+      "has_sqli": false,
+      "has_csrf": false,
+      "has_file_upload": false,
+      "has_ssrf": false,
+      "has_command_injection": false,
+      "has_insecure_deserialization": false,
+      "has_websocket_vulnerability": false,
+      "has_api_vulnerability": false,
+      "has_graphql_vulnerability": false,
+      "has_race_condition": true,
+      "has_prototype_pollution": false
+    }
+  },
+  {
+    "model": "challenges.challenge",
+    "pk": 12,
+    "fields": {
+      "title": "Bloodline Limit",
+      "description": "The final Uchiha challenge involves exploiting prototype pollution in their JavaScript implementation. Can you modify the Object prototype to trigger unexpected behavior?\n\nHint: Try adding properties to Object.prototype through the user configuration system.",
+      "category": 12,
+      "difficulty": 4,
+      "points": 1000,
+      "flag": "izanami{pr0t0typ3_p0llut10n_m4st3r}",
+      "is_active": true,
+      "created_at": "2025-06-01T00:00:00Z",
+      "updated_at": "2025-06-01T00:00:00Z",
+      "requires_authentication": true,
+      "chakra_cost": 60,
+      "hint_available": true,
+      "has_xss": false,
+      "has_sqli": false,
+      "has_csrf": false,
+      "has_file_upload": false,
+      "has_ssrf": false,
+      "has_command_injection": false,
+      "has_insecure_deserialization": false,
+      "has_websocket_vulnerability": false,
+      "has_api_vulnerability": false,
+      "has_graphql_vulnerability": false,
+      "has_race_condition": false,
+      "has_prototype_pollution": true
+    }
+  },
+  {
+    "model": "challenges.hint",
+    "pk": 1,
+    "fields": {
+      "challenge": 1,
+      "content": "Try using ' OR '1'='1 in the username field to bypass the login.",
+      "chakra_cost": 3
+    }
+  },
+  {
+    "model": "challenges.hint",
+    "pk": 2,
+    "fields": {
+      "challenge": 2,
+      "content": "Try injecting <script>alert(document.cookie)</script> in the name parameter.",
+      "chakra_cost": 3
+    }
+  },
+  {
+    "model": "challenges.hint",
+    "pk": 3,
+    "fields": {
+      "challenge": 3,
+      "content": "The form is missing CSRF protection. Create a form on another site that submits to this endpoint automatically.",
+      "chakra_cost": 5
+    }
+  },
+  {
+    "model": "challenges.hint",
+    "pk": 4,
+    "fields": {
+      "challenge": 4,
+      "content": "Try uploading a file with a double extension like malicious.php.jpg or changing the Content-Type header.",
+      "chakra_cost": 8
+    }
+  },
+  {
+    "model": "challenges.hint",
+    "pk": 5,
+    "fields": {
+      "challenge": 5,
+      "content": "Try accessing internal services using file:// or http://localhost URLs.",
+      "chakra_cost": 10
+    }
+  },
+  {
+    "model": "challenges.hint",
+    "pk": 6,
+    "fields": {
+      "challenge": 6,
+      "content": "Try using command separators like ; or && to execute additional commands.",
+      "chakra_cost": 12
+    }
+  },
+  {
+    "model": "challenges.hint",
+    "pk": 7,
+    "fields": {
+      "challenge": 7,
+      "content": "Create a malicious pickle payload that executes code when deserialized. Look into the __reduce__ method.",
+      "chakra_cost": 15
+    }
+  },
+  {
+    "model": "challenges.hint",
+    "pk": 8,
+    "fields": {
+      "challenge": 8,
+      "content": "The WebSocket doesn't validate the sender. Try impersonating other users or injecting HTML/JavaScript in messages.",
+      "chakra_cost": 15
+    }
+  },
+  {
+    "model": "challenges.hint",
+    "pk": 9,
+    "fields": {
+      "challenge": 9,
+      "content": "Try modifying the user ID parameter to access other users' data. The API doesn't check if you're authorized to view that data.",
+      "chakra_cost": 20
+    }
+  },
+  {
+    "model": "challenges.hint",
+    "pk": 10,
+    "fields": {
+      "challenge": 10,
+      "content": "Use GraphQL introspection to discover hidden fields and queries. Try creating a deeply nested query to cause a DoS.",
+      "chakra_cost": 20
+    }
+  },
+  {
+    "model": "challenges.hint",
+    "pk": 11,
+    "fields": {
+      "challenge": 11,
+      "content": "The system doesn't handle concurrent requests properly. Try making multiple requests to transfer points simultaneously.",
+      "chakra_cost": 25
+    }
+  },
+  {
+    "model": "challenges.hint",
+    "pk": 12,
+    "fields": {
+      "challenge": 12,
+      "content": "Try adding a property to Object.prototype by passing a JSON payload with __proto__ in it.",
+      "chakra_cost": 30
+    }
+  },
+  {
+    "model": "accounts.achievement",
+    "pk": 1,
+    "fields": {
+      "name": "Academy Graduate",
+      "description": "Complete all Academy level challenges",
+      "icon": "fa-graduation-cap"
+    }
+  },
+  {
+    "model": "accounts.achievement",
+    "pk": 2,
+    "fields": {
+      "name": "Chunin Exam Survivor",
+      "description": "Complete all Chunin level challenges",
+      "icon": "fa-user-ninja"
+    }
+  },
+  {
+    "model": "accounts.achievement",
+    "pk": 3,
+    "fields": {
+      "name": "Jōnin Elite",
+      "description": "Complete all Jōnin level challenges",
+      "icon": "fa-user-shield"
+    }
+  },
+  {
+    "model": "accounts.achievement",
+    "pk": 4,
+    "fields": {
+      "name": "Uchiha Prodigy",
+      "description": "Complete all Uchiha level challenges",
+      "icon": "fa-eye"
+    }
+  },
+  {
+    "model": "accounts.achievement",
+    "pk": 5,
+    "fields": {
+      "name": "SQL Master",
+      "description": "Complete all SQL Injection challenges",
+      "icon": "fa-database"
+    }
+  },
+  {
+    "model": "accounts.achievement",
+    "pk": 6,
+    "fields": {
+      "name": "Script Kiddie",
+      "description": "Complete all XSS challenges",
+      "icon": "fa-code"
+    }
+  },
+  {
+    "model": "accounts.achievement",
+    "pk": 7,
+    "fields": {
+      "name": "First Blood",
+      "description": "Be the first to solve any challenge",
+      "icon": "fa-tint"
+    }
+  },
+  {
+    "model": "accounts.achievement",
+    "pk": 8,
+    "fields": {
+      "name": "Perfect Loop",
+      "description": "Solve a challenge without using any hints",
+      "icon": "fa-sync-alt"
+    }
+  }
+]

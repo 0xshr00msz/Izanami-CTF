@@ -1,0 +1,205 @@
+/* Izanami: The Endless Loop - Custom Theme */
+
+/* Base styles */
+body {
+    background-color: #121212;
+    color: #e0e0e0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Sharingan-inspired elements */
+.sharingan-bg {
+    background: radial-gradient(circle, #000000 10%, #800000 60%, #ff0000 100%);
+}
+
+.sharingan-text {
+    color: #ff0000;
+    text-shadow: 0 0 5px rgba(255, 0, 0, 0.7);
+}
+
+/* Card styling */
+.card {
+    background-color: #1e1e1e;
+    border-width: 2px;
+}
+
+.card-header {
+    font-weight: bold;
+}
+
+/* Challenge difficulty indicators */
+.difficulty-academy {
+    border-left: 4px solid #28a745;
+}
+
+.difficulty-chunin {
+    border-left: 4px solid #17a2b8;
+}
+
+.difficulty-jonin {
+    border-left: 4px solid #ffc107;
+}
+
+.difficulty-uchiha {
+    border-left: 4px solid #dc3545;
+}
+
+/* Challenge status indicators */
+.challenge-solved {
+    border: 2px solid #28a745;
+}
+
+.challenge-unsolved {
+    border: 2px solid #6c757d;
+}
+
+/* Navbar customization */
+.navbar {
+    border-bottom: 2px solid #800000;
+}
+
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+/* Button styling */
+.btn-sharingan {
+    background-color: #800000;
+    border-color: #ff0000;
+    color: white;
+}
+
+.btn-sharingan:hover {
+    background-color: #ff0000;
+    border-color: #800000;
+    color: white;
+}
+
+/* Animations */
+@keyframes sharingan-spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.sharingan-spin {
+    display: inline-block;
+    animation: sharingan-spin 2s infinite linear;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1e1e1e;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #800000;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #ff0000;
+}
+
+/* Code blocks */
+pre {
+    background-color: #2d2d2d;
+    color: #e0e0e0;
+    padding: 15px;
+    border-radius: 5px;
+    border-left: 4px solid #800000;
+}
+
+code {
+    color: #ff6b6b;
+}
+
+/* Form styling */
+.form-control {
+    background-color: #2d2d2d;
+    border: 1px solid #444;
+    color: #e0e0e0;
+}
+
+.form-control:focus {
+    background-color: #2d2d2d;
+    border-color: #800000;
+    color: #e0e0e0;
+    box-shadow: 0 0 0 0.25rem rgba(128, 0, 0, 0.25);
+}
+
+/* Challenge categories */
+.category-badge {
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.category-xss {
+    background-color: #d63384;
+    color: white;
+}
+
+.category-sqli {
+    background-color: #6f42c1;
+    color: white;
+}
+
+.category-csrf {
+    background-color: #fd7e14;
+    color: white;
+}
+
+.category-file-upload {
+    background-color: #20c997;
+    color: white;
+}
+
+.category-ssrf {
+    background-color: #0dcaf0;
+    color: white;
+}
+
+.category-command-injection {
+    background-color: #dc3545;
+    color: white;
+}
+
+.category-deserialization {
+    background-color: #6610f2;
+    color: white;
+}
+
+.category-websocket {
+    background-color: #198754;
+    color: white;
+}
+
+.category-api {
+    background-color: #0d6efd;
+    color: white;
+}
+
+.category-graphql {
+    background-color: #e83e8c;
+    color: white;
+}
+
+.category-race-condition {
+    background-color: #ffc107;
+    color: black;
+}
+
+.category-prototype-pollution {
+    background-color: #adb5bd;
+    color: black;
+}

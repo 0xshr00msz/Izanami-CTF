@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ level }} Level Locked - Izanami CTF{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card bg-dark border-danger">
+            <div class="card-body text-center">
+                <i class="fas fa-lock text-danger fa-5x mb-4"></i>
+                
+                <h2 class="card-title text-danger">{{ level }} Level Locked</h2>
+                <p class="card-text lead">
+                    You haven't completed enough challenges from the previous level to access this one.
+                </p>
+                
+                <div class="mt-4">
+                    <p>
+                        {% if level == 'Chunin' %}
+                        You need to solve at least 70% of the Academy level challenges to unlock the Chunin level.
+                        {% elif level == 'Jōnin' %}
+                        You need to solve at least 70% of the Chunin level challenges to unlock the Jōnin level.
+                        {% elif level == 'Uchiha' %}
+                        You need to solve at least 70% of the Jōnin level challenges to unlock the Uchiha level.
+                        {% endif %}
+                    </p>
+                    
+                    <div class="mt-4">
+                        {% if level == 'Chunin' %}
+                        <a href="{% url 'challenges:academy' %}" class="btn btn-success">
+                            <i class="fas fa-graduation-cap"></i> Go to Academy Challenges
+                        </a>
+                        {% elif level == 'Jōnin' %}
+                        <a href="{% url 'challenges:chunin' %}" class="btn btn-info">
+                            <i class="fas fa-user-ninja"></i> Go to Chunin Challenges
+                        </a>
+                        {% elif level == 'Uchiha' %}
+                        <a href="{% url 'challenges:jonin' %}" class="btn btn-warning">
+                            <i class="fas fa-user-shield"></i> Go to Jōnin Challenges
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card bg-dark mt-4">
+            <div class="card-header bg-dark">
+                <h5 class="mb-0">Progression System</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <h6 class="d-flex justify-content-between">
+                        <span>Academy</span>
+                        <span class="badge bg-success">Beginner</span>
+                    </h6>
+                    <div class="progress mb-2">
+                        <div class="progress-bar bg-success" style="width: 25%"></div>
+                    </div>
+                    <small class="text-muted">Basic web vulnerabilities and introductory challenges</small>
+                </div>
+                
+                <div class="mb-3">
+                    <h6 class="d-flex justify-content-between">
+                        <span>Chunin</span>
+                        <span class="badge bg-info">Intermediate</span>
+                    </h6>
+                    <div class="progress mb-2">
+                        <div class="progress-bar bg-info" style="width: 50%"></div>
+                    </div>
+                    <small class="text-muted">More complex exploits requiring deeper understanding</small>
+                </div>
+                
+                <div class="mb-3">
+                    <h6 class="d-flex justify-content-between">
+                        <span>Jōnin</span>
+                        <span class="badge bg-warning">Advanced</span>
+                    </h6>
+                    <div class="progress mb-2">
+                        <div class="progress-bar bg-warning" style="width: 75%"></div>
+                    </div>
+                    <small class="text-muted">Advanced challenges requiring chained vulnerabilities</small>
+                </div>
+                
+                <div>
+                    <h6 class="d-flex justify-content-between">
+                        <span>Uchiha</span>
+                        <span class="badge bg-danger">Expert</span>
+                    </h6>
+                    <div class="progress mb-2">
+                        <div class="progress-bar bg-danger" style="width: 100%"></div>
+                    </div>
+                    <small class="text-muted">Expert-level challenges combining multiple attack vectors</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

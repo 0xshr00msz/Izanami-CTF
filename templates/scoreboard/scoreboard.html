@@ -1,0 +1,262 @@
+{% extends 'base.html' %}
+
+{% block title %}Scoreboard - Izanami CTF{% endblock %}
+
+{% block extra_css %}
+<style>
+    .scoreboard-table th,
+    .scoreboard-table td {
+        vertical-align: middle;
+    }
+    
+    .user-rank {
+        font-size: 1.2rem;
+        font-weight: bold;
+    }
+    
+    .rank-1 {
+        color: gold;
+    }
+    
+    .rank-2 {
+        color: silver;
+    }
+    
+    .rank-3 {
+        color: #cd7f32; /* bronze */
+    }
+    
+    .current-user {
+        background-color: rgba(220, 53, 69, 0.2);
+    }
+    
+    .scoreboard-header {
+        background: linear-gradient(to right, #800000, #1e1e1e);
+        padding: 20px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="scoreboard-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <h2 class="text-white mb-0">
+            <i class="fas fa-trophy"></i> Scoreboard
+        </h2>
+        {% if user_rank %}
+        <div>
+            <span class="badge bg-danger">Your Rank: {{ user_rank }}</span>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card bg-dark">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-dark table-hover scoreboard-table">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">User</th>
+                        <th scope="col">Level</th>
+                        <th scope="col">Score</th>
+                        <th scope="col">Last Solve</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in entries %}
+                    <tr class="{% if entry.user == user %}current-user{% endif %}">
+                        <td>
+                            <span class="user-rank {% if entry.rank == 1 %}rank-1{% elif entry.rank == 2 %}rank-2{% elif entry.rank == 3 %}rank-3{% endif %}">
+                                {{ entry.rank }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                {% if entry.rank <= 3 %}
+                                <i class="fas fa-crown me-2 {% if entry.rank == 1 %}text-warning{% elif entry.rank == 2 %}text-light{% elif entry.rank == 3 %}text-danger{% endif %}"></i>
+                                {% endif %}
+                                {{ entry.user.username }}
+                                {% if entry.user == user %}
+                                <span class="badge bg-danger ms-2">You</span>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge 
+                                {% if entry.user.profile.current_level == 'academy' %}bg-success{% endif %}
+                                {% if entry.user.profile.current_level == 'chunin' %}bg-info{% endif %}
+                                {% if entry.user.profile.current_level == 'jonin' %}bg-warning{% endif %}
+                                {% if entry.user.profile.current_level == 'uchiha' %}bg-danger{% endif %}
+                            ">
+                                {{ entry.user.profile.current_level|title }}
+                            </span>
+                        </td>
+                        <td>
+                            <strong>{{ entry.score }}</strong>
+                        </td>
+                        <td>
+                            {% if entry.last_solve_time %}
+                            {{ entry.last_solve_time|date:"F j, Y H:i" }}
+                            {% else %}
+                            -
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center">No entries yet</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card bg-dark">
+            <div class="card-header bg-dark">
+                <h5 class="mb-0">Top Performers</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="top-performers-chart" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card bg-dark">
+            <div class="card-header bg-dark">
+                <h5 class="mb-0">Challenge Completion Stats</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="challenge-stats-chart" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    $(document).ready(function() {
+        // Fetch scoreboard data for charts
+        $.ajax({
+            url: '{% url "scoreboard:scoreboard_data" %}',
+            type: 'GET',
+            success: function(response) {
+                createTopPerformersChart(response.data.slice(0, 5));
+                createChallengeStatsChart();
+            }
+        });
+    });
+    
+    function createTopPerformersChart(data) {
+        const ctx = document.getElementById('top-performers-chart').getContext('2d');
+        
+        // Extract usernames and scores
+        const usernames = data.map(entry => entry.username);
+        const scores = data.map(entry => entry.score);
+        
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: usernames,
+                datasets: [{
+                    label: 'Score',
+                    data: scores,
+                    backgroundColor: [
+                        'rgba(255, 215, 0, 0.7)',  // Gold
+                        'rgba(192, 192, 192, 0.7)', // Silver
+                        'rgba(205, 127, 50, 0.7)',  // Bronze
+                        'rgba(220, 53, 69, 0.7)',   // Red
+                        'rgba(220, 53, 69, 0.7)'    // Red
+                    ],
+                    borderColor: [
+                        'rgba(255, 215, 0, 1)',
+                        'rgba(192, 192, 192, 1)',
+                        'rgba(205, 127, 50, 1)',
+                        'rgba(220, 53, 69, 1)',
+                        'rgba(220, 53, 69, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        ticks: {
+                            color: '#e0e0e0'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        ticks: {
+                            color: '#e0e0e0'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    }
+    
+    function createChallengeStatsChart() {
+        const ctx = document.getElementById('challenge-stats-chart').getContext('2d');
+        
+        // Sample data - in a real app, this would come from the backend
+        const data = {
+            labels: ['Academy', 'Chunin', 'Jōnin', 'Uchiha'],
+            datasets: [{
+                label: 'Solved',
+                data: [85, 62, 34, 12],
+                backgroundColor: [
+                    'rgba(40, 167, 69, 0.7)',  // Green
+                    'rgba(23, 162, 184, 0.7)', // Cyan
+                    'rgba(255, 193, 7, 0.7)',  // Yellow
+                    'rgba(220, 53, 69, 0.7)'   // Red
+                ],
+                borderColor: [
+                    'rgba(40, 167, 69, 1)',
+                    'rgba(23, 162, 184, 1)',
+                    'rgba(255, 193, 7, 1)',
+                    'rgba(220, 53, 69, 1)'
+                ],
+                borderWidth: 1
+            }]
+        };
+        
+        new Chart(ctx, {
+            type: 'pie',
+            data: data,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            color: '#e0e0e0'
+                        }
+                    }
+                }
+            }
+        });
+    }
+</script>
+{% endblock %}

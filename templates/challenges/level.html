@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ level }} Challenges - Izanami CTF{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card bg-dark 
+            {% if level == 'Academy' %}border-success{% endif %}
+            {% if level == 'Chunin' %}border-info{% endif %}
+            {% if level == 'Jōnin' %}border-warning{% endif %}
+            {% if level == 'Uchiha' %}border-danger{% endif %}
+        ">
+            <div class="card-body">
+                <h2 class="card-title 
+                    {% if level == 'Academy' %}text-success{% endif %}
+                    {% if level == 'Chunin' %}text-info{% endif %}
+                    {% if level == 'Jōnin' %}text-warning{% endif %}
+                    {% if level == 'Uchiha' %}text-danger{% endif %}
+                ">
+                    <i class="fas 
+                        {% if level == 'Academy' %}fa-graduation-cap{% endif %}
+                        {% if level == 'Chunin' %}fa-user-ninja{% endif %}
+                        {% if level == 'Jōnin' %}fa-user-shield{% endif %}
+                        {% if level == 'Uchiha' %}fa-eye{% endif %}
+                    "></i> 
+                    {{ level }} Challenges
+                </h2>
+                <p class="card-text">
+                    {% if level == 'Academy' %}
+                    These are beginner-level challenges designed to introduce you to basic web vulnerabilities.
+                    Master these to progress to the Chunin level.
+                    {% elif level == 'Chunin' %}
+                    These intermediate challenges require a deeper understanding of web security concepts.
+                    Complete these to advance to the Jōnin level.
+                    {% elif level == 'Jōnin' %}
+                    Advanced challenges that often require chaining multiple vulnerabilities together.
+                    Solve these to prove you're worthy of the Uchiha level.
+                    {% elif level == 'Uchiha' %}
+                    The most difficult challenges that require expert-level knowledge and creative thinking.
+                    Only the most skilled ninjas can complete these challenges.
+                    {% endif %}
+                </p>
+                
+                <div class="mt-3">
+                    <div class="btn-group" role="group">
+                        <a href="{% url 'challenges:academy' %}" class="btn btn-outline-success {% if level == 'Academy' %}active{% endif %}">Academy</a>
+                        <a href="{% url 'challenges:chunin' %}" class="btn btn-outline-info {% if level == 'Chunin' %}active{% endif %}">Chunin</a>
+                        <a href="{% url 'challenges:jonin' %}" class="btn btn-outline-warning {% if level == 'Jōnin' %}active{% endif %}">Jōnin</a>
+                        <a href="{% url 'challenges:uchiha' %}" class="btn btn-outline-danger {% if level == 'Uchiha' %}active{% endif %}">Uchiha</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    {% for challenge in challenges %}
+    <div class="col-lg-4 col-md-6 mb-4">
+        <div id="challenge-{{ challenge.id }}" class="card bg-dark h-100 
+            {% if challenge.id in solved_challenges %}challenge-solved{% else %}challenge-unsolved{% endif %}
+            difficulty-{{ level|lower }}">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">{{ challenge.title }}</h5>
+                <span class="badge bg-primary">{{ challenge.points }}</span>
+            </div>
+            <div class="card-body">
+                <p>{{ challenge.description|truncatechars:150 }}</p>
+                
+                <div class="mb-3">
+                    <span class="category-badge category-{{ challenge.category.name|lower }}">
+                        {{ challenge.category.name }}
+                    </span>
+                    
+                    {% if challenge.id in solved_challenges %}
+                    <span class="badge bg-success ms-2">Solved</span>
+                    {% endif %}
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <small class="text-muted">
+                        <i class="fas fa-fire text-primary"></i> Chakra cost: {{ challenge.chakra_cost }}
+                    </small>
+                    <a href="{% url 'challenges:detail' challenge.id %}" class="btn btn-sm 
+                        {% if level == 'Academy' %}btn-success{% endif %}
+                        {% if level == 'Chunin' %}btn-info{% endif %}
+                        {% if level == 'Jōnin' %}btn-warning{% endif %}
+                        {% if level == 'Uchiha' %}btn-danger{% endif %}
+                    ">
+                        View Challenge
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="alert alert-info">
+            No challenges available for this level yet.
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

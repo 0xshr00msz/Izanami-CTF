@@ -1,0 +1,222 @@
+{% extends 'base.html' %}
+
+{% block title %}About - Izanami CTF{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card bg-dark border-info">
+            <div class="card-body">
+                <h2 class="card-title text-info">
+                    <i class="fas fa-info-circle"></i> About Izanami: The Endless Loop
+                </h2>
+                <p class="card-text lead">
+                    A web-based CTF game inspired by Itachi's Sharingan Izanami from Naruto Shippuden.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card bg-dark mb-4">
+            <div class="card-header bg-dark">
+                <h5 class="mb-0">Game Concept</h5>
+            </div>
+            <div class="card-body">
+                <p>
+                    Similar to how Izanami traps opponents in a loop of reality they must acknowledge to escape, 
+                    this CTF will trap players in a series of web-based challenges that require breaking out of 
+                    predetermined patterns through offensive web hacking techniques.
+                </p>
+                
+                <p>
+                    In Naruto Shippuden, Izanami is a powerful genjutsu technique that traps the target in an 
+                    infinite loop of events. The only way to break free is for the target to accept their true 
+                    self and circumstances. Similarly, in this CTF game, players must identify vulnerabilities, 
+                    understand the underlying patterns, and find their own unique solution paths to escape the loop.
+                </p>
+                
+                <p>
+                    Each challenge represents a "memory" the player is trapped in, and to escape the Izanami, 
+                    players must "acknowledge their true selves" by finding their own unique solution path.
+                </p>
+            </div>
+        </div>
+        
+        <div class="card bg-dark mb-4">
+            <div class="card-header bg-dark">
+                <h5 class="mb-0">Challenge Categories</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item bg-dark text-light">
+                                <i class="fas fa-bug text-danger me-2"></i> SQL Injection
+                            </li>
+                            <li class="list-group-item bg-dark text-light">
+                                <i class="fas fa-code text-primary me-2"></i> Cross-Site Scripting (XSS)
+                            </li>
+                            <li class="list-group-item bg-dark text-light">
+                                <i class="fas fa-random text-warning me-2"></i> Cross-Site Request Forgery (CSRF)
+                            </li>
+                            <li class="list-group-item bg-dark text-light">
+                                <i class="fas fa-server text-info me-2"></i> Server-Side Request Forgery (SSRF)
+                            </li>
+                            <li class="list-group-item bg-dark text-light">
+                                <i class="fas fa-terminal text-danger me-2"></i> Command Injection
+                            </li>
+                            <li class="list-group-item bg-dark text-light">
+                                <i class="fas fa-box-open text-success me-2"></i> Insecure Deserialization
+                            </li>
+                            <li class="list-group-item bg-dark text-light">
+                                <i class="fas fa-file-upload text-primary me-2"></i> File Upload Vulnerabilities
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item bg-dark text-light">
+                                <i class="fas fa-project-diagram text-warning me-2"></i> API Manipulation
+                            </li>
+                            <li class="list-group-item bg-dark text-light">
+                                <i class="fas fa-plug text-info me-2"></i> WebSocket Vulnerabilities
+                            </li>
+                            <li class="list-group-item bg-dark text-light">
+                                <i class="fas fa-database text-success me-2"></i> Client-Side Storage Exploitation
+                            </li>
+                            <li class="list-group-item bg-dark text-light">
+                                <i class="fas fa-clock text-danger me-2"></i> Race Conditions
+                            </li>
+                            <li class="list-group-item bg-dark text-light">
+                                <i class="fas fa-sitemap text-primary me-2"></i> GraphQL Vulnerabilities
+                            </li>
+                            <li class="list-group-item bg-dark text-light">
+                                <i class="fas fa-cloud text-warning me-2"></i> Web Cache Poisoning
+                            </li>
+                            <li class="list-group-item bg-dark text-light">
+                                <i class="fas fa-network-wired text-info me-2"></i> HTTP Request Smuggling
+                            </li>
+                            <li class="list-group-item bg-dark text-light">
+                                <i class="fas fa-code-branch text-success me-2"></i> Prototype Pollution
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card bg-dark mb-4">
+            <div class="card-header bg-dark">
+                <h5 class="mb-0">Game Mechanics</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item bg-dark text-light">
+                        <h6><i class="fas fa-eye text-danger"></i> Sharingan Points</h6>
+                        <p class="small">Earned by solving challenges. The more difficult the challenge, the more points you earn.</p>
+                    </li>
+                    <li class="list-group-item bg-dark text-light">
+                        <h6><i class="fas fa-fire text-primary"></i> Chakra Meter</h6>
+                        <p class="small">Limited attempts for certain challenges. Your chakra regenerates over time.</p>
+                    </li>
+                    <li class="list-group-item bg-dark text-light">
+                        <h6><i class="fas fa-scroll text-warning"></i> Scrolls</h6>
+                        <p class="small">Hidden documentation/hints found throughout the game.</p>
+                    </li>
+                    <li class="list-group-item bg-dark text-light">
+                        <h6><i class="fas fa-sync-alt text-info"></i> Genjutsu Counter</h6>
+                        <p class="small">Shows how many "loops" you've been through. Each failed attempt increases your counter.</p>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="card bg-dark">
+            <div class="card-header bg-dark">
+                <h5 class="mb-0">Difficulty Levels</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <h6 class="d-flex justify-content-between">
+                        <span>Academy</span>
+                        <span class="badge bg-success">Beginner</span>
+                    </h6>
+                    <p class="small">Basic web vulnerabilities and introductory challenges.</p>
+                </div>
+                
+                <div class="mb-3">
+                    <h6 class="d-flex justify-content-between">
+                        <span>Chunin</span>
+                        <span class="badge bg-info">Intermediate</span>
+                    </h6>
+                    <p class="small">More complex exploits requiring deeper understanding.</p>
+                </div>
+                
+                <div class="mb-3">
+                    <h6 class="d-flex justify-content-between">
+                        <span>Jōnin</span>
+                        <span class="badge bg-warning">Advanced</span>
+                    </h6>
+                    <p class="small">Advanced challenges requiring chained vulnerabilities.</p>
+                </div>
+                
+                <div>
+                    <h6 class="d-flex justify-content-between">
+                        <span>Uchiha</span>
+                        <span class="badge bg-danger">Expert</span>
+                    </h6>
+                    <p class="small">Expert-level challenges combining multiple attack vectors.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card bg-dark">
+            <div class="card-header bg-dark">
+                <h5 class="mb-0">Technical Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Backend</h6>
+                        <ul>
+                            <li>Django Framework</li>
+                            <li>Django REST Framework</li>
+                            <li>Django Channels (WebSockets)</li>
+                            <li>Graphene Django (GraphQL)</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Frontend</h6>
+                        <ul>
+                            <li>HTML/CSS</li>
+                            <li>JavaScript</li>
+                            <li>Bootstrap 5</li>
+                            <li>Font Awesome</li>
+                            <li>Chart.js</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <h6>Developer</h6>
+                    <p>Izanami: The Endless Loop was created by <span class="text-danger">0xshr00msz</span>, a security researcher and CTF enthusiast passionate about creating educational hacking challenges.</p>
+                    <p>Connect with the developer:</p>
+                    <ul>
+                        <li><i class="fab fa-github me-2"></i> <a href="https://github.com/0xshr00msz" class="text-danger">GitHub</a></li>
+                        <li><i class="fab fa-twitter me-2"></i> <a href="https://twitter.com/0xshr00msz" class="text-danger">Twitter</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+
+{% block title %}Greeting Card - XSS Challenge{% endblock %}
+
+{% block extra_css %}
+<style>
+    .challenge-container {
+        background-color: #2d2d2d;
+        border-radius: 5px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+    
+    .challenge-header {
+        border-bottom: 2px solid #800000;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+    }
+    
+    .greeting-card {
+        background: linear-gradient(135deg, #800000 0%, #1e1e1e 100%);
+        border-radius: 10px;
+        padding: 30px;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    
+    .greeting-message {
+        font-size: 24px;
+        color: white;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+    }
+    
+    .hint-container {
+        background-color: #1e1e1e;
+        border-left: 4px solid #ffc107;
+        padding: 15px;
+        margin-top: 20px;
+    }
+    
+    .flag-submission {
+        background-color: #1e1e1e;
+        border-radius: 5px;
+        padding: 20px;
+        margin-top: 20px;
+        border-left: 4px solid #dc3545;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div id="xss-challenge" class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="challenge-container">
+            <div class="challenge-header">
+                <h2 class="text-danger">Academy Greeting Card</h2>
+                <p class="text-muted">Create a personalized greeting card with your name!</p>
+            </div>
+            
+            <div id="xss-message"></div>
+            
+            <div class="greeting-card">
+                <div id="greeting-message" class="greeting-message">
+                    Hello, Ninja!
+                </div>
+            </div>
+            
+            <div class="card bg-dark mb-4">
+                <div class="card-body">
+                    <form id="xss-greeting-form">
+                        <div class="mb-3">
+                            <label for="name-input" class="form-label">Your Name</label>
+                            <input type="text" class="form-control" id="name-input" placeholder="Enter your name">
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-danger">Update Greeting</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div id="xss-input-display"></div>
+            
+            <div class="mt-4">
+                <button id="xss-hint-btn" class="btn btn-sm btn-outline-warning">
+                    <i class="fas fa-lightbulb"></i> Show Hint
+                </button>
+                <button id="xss-example-btn" class="btn btn-sm btn-outline-info ms-2">
+                    <i class="fas fa-code"></i> Show Example
+                </button>
+            </div>
+            
+            <div id="xss-hint-content" class="hint-container d-none">
+                <h5><i class="fas fa-lightbulb text-warning"></i> Hint</h5>
+                <p>Cross-Site Scripting (XSS) is a vulnerability that allows attackers to inject client-side scripts into web pages viewed by other users.</p>
+                <p>The greeting card takes your name and inserts it directly into the HTML without sanitization.</p>
+                <p>Try injecting HTML or JavaScript code in the name field.</p>
+                <p>There's a function called <code>revealFlag()</code> that you can try to execute.</p>
+            </div>
+            
+            <!-- Flag Submission Form -->
+            <div class="flag-submission">
+                <h5><i class="fas fa-flag text-danger"></i> Submit Flag</h5>
+                <form id="flag-form" data-challenge-id="{{ challenge.id }}">
+                    {% csrf_token %}
+                    <div class="input-group">
+                        <input type="text" id="flag-input" class="form-control" placeholder="Enter flag here...">
+                        <button class="btn btn-danger" type="submit">Submit</button>
+                    </div>
+                    <small class="text-muted mt-2 d-block">
+                        <i class="fas fa-fire text-primary"></i> Chakra cost: {{ challenge.chakra_cost }}
+                    </small>
+                </form>
+                <div id="flag-message" class="mt-3"></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="/static/js/challenge-specific/xss-challenge.js"></script>
+<script>
+    $(document).ready(function() {
+        // Flag submission handler
+        $('#flag-form').on('submit', function(e) {
+            e.preventDefault();
+            
+            const challengeId = $(this).data('challenge-id');
+            const flagInput = $('#flag-input').val();
+            
+            $.ajax({
+                url: `/challenges/${challengeId}/submit/`,
+                type: 'POST',
+                data: {
+                    'flag': flagInput,
+                    'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+                },
+                success: function(data) {
+                    if (data.success) {
+                        $('#flag-message').html(
+                            `<div class="alert alert-success alert-dismissible fade show">
+                                ${data.message}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>`
+                        );
+                    } else {
+                        $('#flag-message').html(
+                            `<div class="alert alert-danger alert-dismissible fade show">
+                                ${data.message}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>`
+                        );
+                    }
+                },
+                error: function() {
+                    $('#flag-message').html(
+                        `<div class="alert alert-danger alert-dismissible fade show">
+                            An error occurred while submitting your flag.
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>`
+                    );
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

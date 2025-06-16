@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+
+{% block title %}Izanami: The Endless Loop - Home{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card bg-dark border-danger mb-4">
+            <div class="card-body">
+                <h1 class="card-title text-danger">
+                    <i class="fas fa-eye"></i> Izanami: The Endless Loop
+                </h1>
+                <p class="card-text lead">
+                    Welcome to Izanami, a web-based CTF game inspired by Itachi's Sharingan Izanami from Naruto Shippuden.
+                </p>
+                <p>
+                    In this game, you'll be trapped in a loop of web-based challenges that you must break out of using your offensive hacking skills.
+                    Each level represents a "memory" you're trapped in, and to escape the Izanami, you must "acknowledge your true self" by finding your own unique solution path.
+                </p>
+                
+                <div class="mt-4">
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'challenges:index' %}" class="btn btn-danger">
+                        <i class="fas fa-play"></i> Start Challenges
+                    </a>
+                    {% else %}
+                    <a href="{% url 'accounts:register' %}" class="btn btn-danger me-2">
+                        <i class="fas fa-user-plus"></i> Register
+                    </a>
+                    <a href="{% url 'accounts:login' %}" class="btn btn-outline-danger">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="card bg-dark border-secondary mb-4">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0">Game Mechanics</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-eye text-danger"></i> Sharingan Points</h6>
+                        <p>Earn points by solving challenges. The more difficult the challenge, the more points you earn.</p>
+                        
+                        <h6><i class="fas fa-fire text-primary"></i> Chakra Meter</h6>
+                        <p>Each challenge attempt costs chakra. Your chakra regenerates over time.</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-scroll text-warning"></i> Scrolls</h6>
+                        <p>Find hidden scrolls throughout the game to unlock hints and special abilities.</p>
+                        
+                        <h6><i class="fas fa-sync-alt text-info"></i> Genjutsu Counter</h6>
+                        <p>Shows how many "loops" you've been through. Each failed attempt increases your counter.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card bg-dark border-warning mb-4">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0">Latest Announcements</h5>
+            </div>
+            <div class="card-body">
+                {% if announcements %}
+                    {% for announcement in announcements %}
+                    <div class="mb-3">
+                        <h6>{{ announcement.title }}</h6>
+                        <p class="small text-muted">{{ announcement.created_at|date:"F j, Y" }}</p>
+                        <p>{{ announcement.content|truncatewords:30 }}</p>
+                    </div>
+                    {% if not forloop.last %}<hr>{% endif %}
+                    {% endfor %}
+                    <a href="{% url 'core:announcements' %}" class="btn btn-sm btn-outline-warning mt-2">View All</a>
+                {% else %}
+                    <p>No announcements yet.</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card bg-dark border-info">
+            <div class="card-header bg-info text-dark">
+                <h5 class="mb-0">Difficulty Levels</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-2">
+                    <h6 class="text-white">Academy</h6>
+                    <div class="progress">
+                        <div class="progress-bar bg-success" style="width: 25%">Beginner</div>
+                    </div>
+                </div>
+                <div class="mb-2">
+                    <h6 class="text-white">Chunin</h6>
+                    <div class="progress">
+                        <div class="progress-bar bg-info" style="width: 50%">Intermediate</div>
+                    </div>
+                </div>
+                <div class="mb-2">
+                    <h6 class="text-white">Jōnin</h6>
+                    <div class="progress">
+                        <div class="progress-bar bg-warning" style="width: 75%">Advanced</div>
+                    </div>
+                </div>
+                <div>
+                    <h6 class="text-white">Uchiha</h6>
+                    <div class="progress">
+                        <div class="progress-bar bg-danger" style="width: 100%">Expert</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

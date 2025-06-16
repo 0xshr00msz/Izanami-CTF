@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block title %}Achievements - Izanami CTF{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card bg-dark border-warning">
+            <div class="card-body">
+                <h2 class="card-title text-warning">
+                    <i class="fas fa-trophy"></i> Achievements
+                </h2>
+                <p class="card-text">
+                    Track your progress and unlock special achievements as you solve challenges and master different hacking techniques.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    {% for item in achievements_list %}
+    <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+        <div class="card bg-dark h-100 {% if item.earned %}border-warning{% else %}border-secondary{% endif %}">
+            <div class="card-body text-center">
+                <i class="fas {{ item.achievement.icon }} fa-3x mb-3 {% if item.earned %}text-warning{% else %}text-muted{% endif %}"></i>
+                <h5>{{ item.achievement.name }}</h5>
+                <p class="small {% if not item.earned %}text-muted{% endif %}">{{ item.achievement.description }}</p>
+                
+                {% if item.earned %}
+                <div class="badge bg-warning text-dark mb-2">
+                    <i class="fas fa-check-circle"></i> Earned
+                </div>
+                <div>
+                    <small class="text-muted">{{ item.earned_at|date:"F j, Y" }}</small>
+                </div>
+                {% else %}
+                <div class="badge bg-secondary mb-2">
+                    <i class="fas fa-lock"></i> Locked
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="alert alert-info">
+            No achievements available yet.
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card bg-dark">
+            <div class="card-header bg-dark">
+                <h5 class="mb-0">Achievement Categories</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <div class="card bg-dark border-secondary">
+                            <div class="card-body">
+                                <h5><i class="fas fa-flag text-danger me-2"></i> Challenge Achievements</h5>
+                                <p class="small text-muted">Earned by solving specific challenges or a certain number of challenges.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card bg-dark border-secondary">
+                            <div class="card-body">
+                                <h5><i class="fas fa-code text-primary me-2"></i> Technique Achievements</h5>
+                                <p class="small text-muted">Earned by mastering specific hacking techniques or vulnerability types.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card bg-dark border-secondary">
+                            <div class="card-body">
+                                <h5><i class="fas fa-star text-warning me-2"></i> Special Achievements</h5>
+                                <p class="small text-muted">Earned through unique actions or discovering hidden features in the game.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

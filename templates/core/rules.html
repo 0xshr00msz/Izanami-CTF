@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+
+{% block title %}Rules - Izanami CTF{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card bg-dark border-warning">
+            <div class="card-body">
+                <h2 class="card-title text-warning">
+                    <i class="fas fa-gavel"></i> Rules
+                </h2>
+                <p class="card-text lead">
+                    Please read and follow these rules to ensure a fair and enjoyable experience for all participants.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card bg-dark mb-4">
+            <div class="card-header bg-dark">
+                <h5 class="mb-0">General Rules</h5>
+            </div>
+            <div class="card-body">
+                <ol class="list-group list-group-flush">
+                    <li class="list-group-item bg-dark text-light">
+                        <strong>Fair Play:</strong> Do not attempt to disrupt the game for other players. This includes 
+                        denial of service attacks, brute forcing the platform, or any other actions that could negatively 
+                        impact the experience for others.
+                    </li>
+                    <li class="list-group-item bg-dark text-light">
+                        <strong>Scope:</strong> Only attack the challenges themselves. The game infrastructure (authentication 
+                        system, scoreboard, etc.) is out of scope unless explicitly stated in a challenge.
+                    </li>
+                    <li class="list-group-item bg-dark text-light">
+                        <strong>Sharing:</strong> Do not share solutions or flags with other players. The purpose of this 
+                        game is to learn and improve your skills.
+                    </li>
+                    <li class="list-group-item bg-dark text-light">
+                        <strong>Automation:</strong> Automated tools are allowed for solving challenges, but please be 
+                        mindful of the server load. Excessive requests may be rate-limited.
+                    </li>
+                    <li class="list-group-item bg-dark text-light">
+                        <strong>Reporting Issues:</strong> If you find a bug or vulnerability in the platform itself 
+                        (not part of a challenge), please report it to the administrators immediately.
+                    </li>
+                </ol>
+            </div>
+        </div>
+        
+        <div class="card bg-dark mb-4">
+            <div class="card-header bg-dark">
+                <h5 class="mb-0">Flag Format</h5>
+            </div>
+            <div class="card-body">
+                <p>All flags follow the format: <code>izanami{some_text_here}</code></p>
+                <p>When submitting flags:</p>
+                <ul>
+                    <li>Include the curly braces</li>
+                    <li>Flags are case-sensitive</li>
+                    <li>No extra spaces or characters</li>
+                </ul>
+                
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i> Example: <code>izanami{th1s_1s_4_fl4g}</code>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card bg-dark">
+            <div class="card-header bg-dark">
+                <h5 class="mb-0">Progression System</h5>
+            </div>
+            <div class="card-body">
+                <p>To progress through the difficulty levels:</p>
+                
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item bg-dark text-light">
+                        <strong>Academy to Chunin:</strong> Solve at least 70% of Academy level challenges
+                    </li>
+                    <li class="list-group-item bg-dark text-light">
+                        <strong>Chunin to Jōnin:</strong> Solve at least 70% of Chunin level challenges
+                    </li>
+                    <li class="list-group-item bg-dark text-light">
+                        <strong>Jōnin to Uchiha:</strong> Solve at least 70% of Jōnin level challenges
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card bg-dark mb-4">
+            <div class="card-header bg-dark">
+                <h5 class="mb-0">Chakra System</h5>
+            </div>
+            <div class="card-body">
+                <p>The Chakra system limits the number of attempts you can make:</p>
+                
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item bg-dark text-light">
+                        <strong>Starting Chakra:</strong> 100 points
+                    </li>
+                    <li class="list-group-item bg-dark text-light">
+                        <strong>Challenge Attempts:</strong> Each attempt costs chakra (varies by challenge)
+                    </li>
+                    <li class="list-group-item bg-dark text-light">
+                        <strong>Hint Unlocks:</strong> Unlocking hints costs chakra
+                    </li>
+                    <li class="list-group-item bg-dark text-light">
+                        <strong>Regeneration:</strong> Chakra regenerates at a rate of 10 points per hour
+                    </li>
+                    <li class="list-group-item bg-dark text-light">
+                        <strong>Refill:</strong> Solving challenges may reward chakra points
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="card bg-dark mb-4">
+            <div class="card-header bg-dark">
+                <h5 class="mb-0">Scoring System</h5>
+            </div>
+            <div class="card-body">
+                <p>Points are awarded based on several factors:</p>
+                
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item bg-dark text-light">
+                        <strong>Challenge Difficulty:</strong> Higher difficulty = more points
+                        <ul>
+                            <li>Academy: 100-200 points</li>
+                            <li>Chunin: 200-400 points</li>
+                            <li>Jōnin: 400-700 points</li>
+                            <li>Uchiha: 700-1000 points</li>
+                        </ul>
+                    </li>
+                    <li class="list-group-item bg-dark text-light">
+                        <strong>First Blood:</strong> First player to solve a challenge gets bonus points
+                    </li>
+                    <li class="list-group-item bg-dark text-light">
+                        <strong>Hint Penalty:</strong> Using hints reduces the points earned
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="card bg-dark">
+            <div class="card-header bg-dark">
+                <h5 class="mb-0">Contact</h5>
+            </div>
+            <div class="card-body">
+                <p>If you have any questions or need assistance:</p>
+                
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item bg-dark text-light">
+                        <i class="fas fa-envelope me-2"></i> Email: support@izanami-ctf.com
+                    </li>
+                    <li class="list-group-item bg-dark text-light">
+                        <i class="fab fa-discord me-2"></i> Discord: Izanami CTF Server
+                    </li>
+                    <li class="list-group-item bg-dark text-light">
+                        <i class="fab fa-twitter me-2"></i> Twitter: @IzanamiCTF
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

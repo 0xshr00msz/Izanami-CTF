@@ -1,0 +1,8 @@
+django>=5.0.0
+djangorestframework>=3.14.0
+django-bootstrap5>=23.3
+channels>=4.0.0
+graphene-django>=3.0.0
+requests>=2.31.0
+Pillow>=10.0.0
+python-dotenv>=1.0.0

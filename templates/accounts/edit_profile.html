@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Profile - Izanami CTF{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card bg-dark">
+            <div class="card-header bg-dark">
+                <h5 class="mb-0">Edit Profile</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="mb-3">User Information</h6>
+                            {% for field in u_form %}
+                            <div class="mb-3">
+                                <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                                {{ field }}
+                                {% if field.help_text %}
+                                <small class="form-text text-muted">{{ field.help_text }}</small>
+                                {% endif %}
+                                {% for error in field.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ error }}
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <h6 class="mb-3">Profile Information</h6>
+                            {% for field in p_form %}
+                            <div class="mb-3">
+                                <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                                {{ field }}
+                                {% if field.help_text %}
+                                <small class="form-text text-muted">{{ field.help_text }}</small>
+                                {% endif %}
+                                {% for error in field.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ error }}
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% endfor %}
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Current Level</label>
+                                <input type="text" class="form-control" value="{{ user.profile.current_level|title }}" disabled>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Sharingan Points</label>
+                                <input type="text" class="form-control" value="{{ user.profile.sharingan_points }}" disabled>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid mt-3">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-save"></i> Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Add Bootstrap classes to form fields
+    $(document).ready(function() {
+        $('input').addClass('form-control');
+        $('select').addClass('form-select');
+        $('textarea').addClass('form-control');
+    });
+</script>
+{% endblock %}
