@@ -533,19 +533,17 @@ def pygame_challenge(request, challenge_id):
     ).values_list('hint_id', flat=True)
     
     # Get available hints
-    hints = []
-    for hint in Hint.objects.filter(challenge=challenge):
-        hints.append({
-            'id': hint.id,
-            'content': hint.content,
-            'chakra_cost': hint.chakra_cost,
-            'is_unlocked': hint.id in unlocked_hints
-        })
+    hints = Hint.objects.filter(challenge=challenge)
+    
+    # Add is_unlocked attribute to each hint
+    for hint in hints:
+        hint.is_unlocked = hint.id in unlocked_hints
     
     context = {
         'challenge': challenge,
         'solved': solved,
         'hints': hints,
+        'unlocked_hints': unlocked_hints,
     }
     return render(request, 'challenges/challenge_templates/pygame_challenge.html', context)
 

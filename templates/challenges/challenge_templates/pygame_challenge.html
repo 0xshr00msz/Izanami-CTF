@@ -30,6 +30,15 @@
         font-size: 1.5rem;
         margin-left: 10px;
     }
+    
+    #game-container {
+        outline: none;
+    }
+    
+    #game-container:focus {
+        outline: 3px solid #ff0000;
+        box-shadow: 0 0 15px rgba(255, 0, 0, 0.7);
+    }
 </style>
 {% endblock %}
 
@@ -73,12 +82,27 @@
                     </div>
                     
                     <div class="pygame-container">
-                        <div id="loading-area" class="loading-spinner">
-                            <div class="spinner-border text-danger" role="status"></div>
-                            <span class="loading-text">Loading Pygame...</span>
-                        </div>
-                        <div id="pygame-embed" style="display: none;">
-                            <iframe id="pygame-frame" width="800" height="600" frameborder="0"></iframe>
+                        <div id="pygame-embed">
+                            <div id="game-container" style="width: 800px; height: 600px; border: 2px solid #ff0000; background-color: black; position: relative;" tabindex="0">
+                                <canvas id="game-canvas" width="800" height="600" style="position: absolute; top: 0; left: 0;"></canvas>
+                                <div id="game-ui" style="position: absolute; top: 10px; left: 10px; color: white; font-family: monospace;">
+                                    <div>Score: <span id="score">0</span></div>
+                                    <div>Health: <span id="health">100</span></div>
+                                    <div>Chakra: <span id="chakra">50</span></div>
+                                    <div>Level: <span id="level">1</span></div>
+                                </div>
+                                <div id="flag-display" style="position: absolute; top: 10px; right: 10px; color: white; font-family: monospace;">
+                                    Flag: <span id="flag-parts">????????????????????</span>
+                                </div>
+                                <div id="game-message" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-family: monospace; text-align: center;">
+                                    <h2>Memory Manipulation Challenge</h2>
+                                    <p>Use keyboard shortcuts to reveal memory values:</p>
+                                    <p>- Ctrl+M: Show memory values</p>
+                                    <p>- Ctrl+C: Show collected values</p>
+                                    <p>- Arrow keys: Move player</p>
+                                    <p>Click to start</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     
@@ -162,32 +186,346 @@
 {% block extra_js %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Get the challenge ID from the flag form
-        const challengeId = document.getElementById('flag-form').dataset.challengeId;
+        // Game variables
+        const canvas = document.getElementById('game-canvas');
+        const ctx = canvas.getContext('2d');
+        const gameContainer = document.getElementById('game-container');
+        const gameMessage = document.getElementById('game-message');
+        const flagDisplay = document.getElementById('flag-parts');
         
-        // Set up the Pygame iframe
-        const loadingArea = document.getElementById('loading-area');
-        const pygameEmbed = document.getElementById('pygame-embed');
-        const pygameFrame = document.getElementById('pygame-frame');
+        // Game state
+        let gameRunning = false;
+        let score = 0;
+        let health = 100;
+        let chakra = 50;
+        let level = 1;
+        let secretCounter = 0;
+        const hiddenValues = [42, 13, 37, 73];
+        const collectedValues = [];
+        const flagParts = ["izanami{", "m3m0ry_", "m4n1pul4t10n_", "m4st3r}"];
+        const flagRevealed = [false, false, false, false];
         
-        // Load the Pygame game
-        pygameFrame.onload = function() {
-            loadingArea.style.display = 'none';
-            pygameEmbed.style.display = 'block';
+        // Game objects
+        const player = {
+            x: canvas.width / 2,
+            y: canvas.height / 2,
+            size: 20,
+            speed: 5,
+            color: '#ff0000'
         };
         
-        // Set the iframe source to the Pygame game URL
-        pygameFrame.src = `/challenges/pygame/${challengeId}/game/`;
+        const collectibles = [];
+        const enemies = [];
         
-        // Listen for messages from the iframe (for flag submission)
-        window.addEventListener('message', function(event) {
-            if (event.data && event.data.type === 'flag') {
-                const flag = event.data.flag;
-                document.getElementById('flag-input').value = flag;
-                // Optionally auto-submit the flag
-                // document.getElementById('flag-form').submit();
+        // Initialize collectibles
+        function initCollectibles() {
+            collectibles.length = 0;
+            for (let i = 0; i < 5; i++) {
+                collectibles.push({
+                    x: Math.random() * (canvas.width - 40) + 20,
+                    y: Math.random() * (canvas.height - 40) + 20,
+                    size: 15,
+                    color: '#00ff00',
+                    value: hiddenValues[Math.floor(Math.random() * hiddenValues.length)],
+                    collected: false
+                });
+            }
+        }
+        
+        // Initialize enemies
+        function initEnemies() {
+            enemies.length = 0;
+            for (let i = 0; i < 3; i++) {
+                enemies.push({
+                    x: Math.random() * (canvas.width - 40) + 20,
+                    y: Math.random() * (canvas.height - 40) + 20,
+                    size: 25,
+                    speed: Math.random() * 2 + 1,
+                    color: '#0000ff'
+                });
+            }
+        }
+        
+        // Start the game
+        function startGame() {
+            gameRunning = true;
+            gameMessage.style.display = 'none';
+            initCollectibles();
+            initEnemies();
+            gameLoop();
+        }
+        
+        // Game loop
+        function gameLoop() {
+            if (!gameRunning) return;
+            
+            // Clear canvas
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Move enemies
+            moveEnemies();
+            
+            // Draw collectibles
+            drawCollectibles();
+            
+            // Draw enemies
+            drawEnemies();
+            
+            // Draw player
+            drawPlayer();
+            
+            // Check collisions
+            checkCollisions();
+            
+            // Update UI
+            updateUI();
+            
+            // Continue the game loop
+            requestAnimationFrame(gameLoop);
+        }
+        
+        // Draw player
+        function drawPlayer() {
+            ctx.fillStyle = player.color;
+            ctx.fillRect(player.x - player.size / 2, player.y - player.size / 2, player.size, player.size);
+        }
+        
+        // Draw collectibles
+        function drawCollectibles() {
+            collectibles.forEach(collectible => {
+                if (!collectible.collected) {
+                    ctx.fillStyle = collectible.color;
+                    ctx.beginPath();
+                    ctx.arc(collectible.x, collectible.y, collectible.size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            });
+        }
+        
+        // Draw enemies
+        function drawEnemies() {
+            enemies.forEach(enemy => {
+                ctx.fillStyle = enemy.color;
+                ctx.beginPath();
+                ctx.arc(enemy.x, enemy.y, enemy.size, 0, Math.PI * 2);
+                ctx.fill();
+            });
+        }
+        
+        // Move enemies
+        function moveEnemies() {
+            enemies.forEach(enemy => {
+                // Move towards the player
+                const dx = player.x - enemy.x;
+                const dy = player.y - enemy.y;
+                const distance = Math.max(1, Math.sqrt(dx * dx + dy * dy));
+                enemy.x += dx / distance * enemy.speed;
+                enemy.y += dy / distance * enemy.speed;
+            });
+        }
+        
+        // Check collisions
+        function checkCollisions() {
+            // Check collectible collisions
+            collectibles.forEach((collectible, index) => {
+                if (!collectible.collected) {
+                    const dx = player.x - collectible.x;
+                    const dy = player.y - collectible.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < (player.size / 2 + collectible.size)) {
+                        collectible.collected = true;
+                        score += 10;
+                        chakra += 5;
+                        collectedValues.push(collectible.value);
+                        checkSecretValues();
+                        
+                        // Replace the collected collectible
+                        collectibles[index] = {
+                            x: Math.random() * (canvas.width - 40) + 20,
+                            y: Math.random() * (canvas.height - 40) + 20,
+                            size: 15,
+                            color: '#00ff00',
+                            value: hiddenValues[Math.floor(Math.random() * hiddenValues.length)],
+                            collected: false
+                        };
+                    }
+                }
+            });
+            
+            // Check enemy collisions
+            enemies.forEach(enemy => {
+                const dx = player.x - enemy.x;
+                const dy = player.y - enemy.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < (player.size / 2 + enemy.size)) {
+                    health -= 1;
+                    if (health <= 0) {
+                        gameOver();
+                    }
+                }
+            });
+        }
+        
+        // Check secret values
+        function checkSecretValues() {
+            // Check for specific patterns in collected values
+            if (collectedValues.includes(42) && !flagRevealed[0]) {
+                flagRevealed[0] = true;
+                console.log("You found the first part of the flag!");
+                console.log(`FLAG PART 1: ${flagParts[0]}`);
+                updateFlagDisplay();
+            }
+            
+            if (collectedValues.includes(13) && collectedValues.includes(37) && !flagRevealed[1]) {
+                flagRevealed[1] = true;
+                console.log("You found the second part of the flag!");
+                console.log(`FLAG PART 2: ${flagParts[1]}`);
+                updateFlagDisplay();
+            }
+            
+            if (collectedValues.filter(v => v === 73).length >= 2 && !flagRevealed[2]) {
+                flagRevealed[2] = true;
+                console.log("You found the third part of the flag!");
+                console.log(`FLAG PART 3: ${flagParts[2]}`);
+                updateFlagDisplay();
+            }
+            
+            // Check if all values have been collected in the right order
+            if (flagRevealed[0] && flagRevealed[1] && flagRevealed[2] && secretCounter >= 10 && !flagRevealed[3]) {
+                flagRevealed[3] = true;
+                console.log("You found the final part of the flag!");
+                console.log(`FLAG PART 4: ${flagParts[3]}`);
+                updateFlagDisplay();
+            }
+            
+            // Check if all flag parts have been revealed
+            if (flagRevealed.every(part => part)) {
+                const flag = flagParts.join('');
+                console.log(`FLAG: ${flag}`);
+                gameWon(flag);
+            }
+            
+            // Increment secret counter
+            secretCounter++;
+            if (secretCounter % 5 === 0) {
+                console.log(`Secret counter: ${secretCounter}`);
+            }
+        }
+        
+        // Update flag display
+        function updateFlagDisplay() {
+            let flagText = '';
+            for (let i = 0; i < flagParts.length; i++) {
+                if (flagRevealed[i]) {
+                    flagText += flagParts[i];
+                } else {
+                    flagText += '????';
+                }
+            }
+            flagDisplay.textContent = flagText;
+        }
+        
+        // Update UI
+        function updateUI() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('health').textContent = health;
+            document.getElementById('chakra').textContent = chakra;
+            document.getElementById('level').textContent = level;
+        }
+        
+        // Game over
+        function gameOver() {
+            gameRunning = false;
+            gameMessage.innerHTML = `
+                <h2>GAME OVER</h2>
+                <p>Your score: ${score}</p>
+                <p>Click to restart</p>
+            `;
+            gameMessage.style.display = 'block';
+        }
+        
+        // Game won
+        function gameWon(flag) {
+            gameRunning = false;
+            gameMessage.innerHTML = `
+                <h2>YOU WIN!</h2>
+                <p>Your score: ${score}</p>
+                <p>Flag: ${flag}</p>
+                <p>Click to restart</p>
+            `;
+            gameMessage.style.display = 'block';
+            
+            // Auto-fill the flag input
+            document.getElementById('flag-input').value = flag;
+        }
+        
+        // Handle keyboard input
+        document.addEventListener('keydown', function(event) {
+            if (!gameRunning) return;
+            
+            // Prevent default browser behavior for arrow keys
+            if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'a', 'w', 's', 'd'].includes(event.key)) {
+                event.preventDefault();
+            }
+            
+            // Move player
+            if (event.key === 'ArrowLeft' || event.key === 'a') {
+                player.x = Math.max(player.size / 2, player.x - player.speed);
+            }
+            if (event.key === 'ArrowRight' || event.key === 'd') {
+                player.x = Math.min(canvas.width - player.size / 2, player.x + player.speed);
+            }
+            if (event.key === 'ArrowUp' || event.key === 'w') {
+                player.y = Math.max(player.size / 2, player.y - player.speed);
+            }
+            if (event.key === 'ArrowDown' || event.key === 's') {
+                player.y = Math.min(canvas.height - player.size / 2, player.y + player.speed);
+            }
+            
+            // Secret key combinations
+            if (event.ctrlKey && event.key === 'm') {
+                event.preventDefault();
+                console.log("MEMORY VALUES:", hiddenValues);
+                alert("Memory values: " + hiddenValues.join(", "));
+            }
+            if (event.ctrlKey && event.key === 'c') {
+                event.preventDefault();
+                console.log("COLLECTED VALUES:", collectedValues);
+                alert("Collected values: " + collectedValues.join(", "));
+            }
+            if (event.ctrlKey && event.key === 'h') {
+                event.preventDefault();
+                console.log("HINT: Look for patterns in the memory values. Try to collect specific values.");
+                alert("HINT: Look for patterns in the memory values. Try to collect specific values.");
             }
         });
+        
+        // Handle mouse click to start/restart game
+        gameContainer.addEventListener('click', function() {
+            // Focus the game container to ensure keyboard events are captured
+            gameContainer.focus();
+            
+            if (!gameRunning) {
+                // Reset game state
+                score = 0;
+                health = 100;
+                chakra = 50;
+                level = 1;
+                secretCounter = 0;
+                collectedValues.length = 0;
+                flagRevealed.fill(false);
+                updateFlagDisplay();
+                
+                // Start the game
+                startGame();
+            }
+        });
+        
+        // Get the challenge ID from the flag form
+        const challengeId = document.getElementById('flag-form').dataset.challengeId;
         
         // Handle flag submission
         const flagForm = document.getElementById('flag-form');
@@ -242,20 +580,24 @@
                 const chakraCost = this.dataset.chakraCost;
                 
                 if (confirm(`Are you sure you want to unlock this hint? It will cost ${chakraCost} chakra points.`)) {
-                    fetch(`/challenges/hint/${hintId}/unlock/`, {
+                    fetch(`/challenges/${challengeId}/hint/`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
                             'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-                        }
+                        },
+                        body: JSON.stringify({ hint_id: hintId })
                     })
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
                             const hintContent = document.querySelector(`.hint-content-${hintId}`);
-                            hintContent.innerHTML = data.content || data.hint;
-                            hintContent.classList.remove('d-none');
-                            button.remove();
+                            const content = data.content || data.hint;
+                            if (hintContent) {
+                                hintContent.innerHTML = content;
+                                hintContent.classList.remove('d-none');
+                            }
+                            button.parentElement.innerHTML = content;
                             
                             // Update chakra display in navbar
                             const chakraDisplay = document.getElementById('chakra-display');
