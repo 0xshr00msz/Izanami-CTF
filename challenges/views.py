@@ -179,6 +179,8 @@ def challenge_detail(request, challenge_id):
         template_name = 'challenges/challenge_templates/websocket_challenge.html'
     elif challenge.has_prototype_pollution:
         template_name = 'challenges/challenge_templates/prototype_pollution_challenge.html'
+    elif challenge.has_pygame:
+        template_name = 'challenges/challenge_templates/pygame_challenge.html'
     
     context = {
         'challenge': challenge,
@@ -197,7 +199,13 @@ def submit_flag(request, challenge_id):
         return JsonResponse({'error': 'Method not allowed'}, status=405)
     
     challenge = get_object_or_404(Challenge, pk=challenge_id, is_active=True)
-    submitted_flag = request.POST.get('flag', '').strip()
+    
+    # Handle both form data and JSON requests
+    if request.content_type == 'application/json':
+        data = json.loads(request.body)
+        submitted_flag = data.get('flag', '').strip()
+    else:
+        submitted_flag = request.POST.get('flag', '').strip()
     
     # Check if the user has already solved this challenge
     if ChallengeSolve.objects.filter(user=request.user, challenge=challenge).exists():
@@ -277,7 +285,13 @@ def unlock_hint(request, challenge_id):
     if request.method != 'POST':
         return redirect('challenges:detail', challenge_id=challenge_id)
     
-    hint_id = request.POST.get('hint_id')
+    # Handle both form data and JSON requests
+    if request.content_type == 'application/json':
+        data = json.loads(request.body)
+        hint_id = data.get('hint_id')
+    else:
+        hint_id = request.POST.get('hint_id')
+    
     hint = get_object_or_404(Hint, pk=hint_id, challenge_id=challenge_id)
     
     # Check if user has already unlocked this hint
@@ -285,7 +299,8 @@ def unlock_hint(request, challenge_id):
         return JsonResponse({
             'success': True,
             'message': 'Hint already unlocked!',
-            'hint': hint.content
+            'content': hint.content,
+            'remaining_chakra': request.user.profile.chakra_meter
         })
     
     # Check if user has enough chakra
@@ -304,8 +319,8 @@ def unlock_hint(request, challenge_id):
     return JsonResponse({
         'success': True,
         'message': 'Hint unlocked!',
-        'hint': hint.content,
-        'chakra': profile.chakra_meter
+        'content': hint.content,
+        'remaining_chakra': profile.chakra_meter
     })
 
 # Vulnerable API endpoints for challenges
@@ -502,3 +517,115 @@ def get_profile_api(request):
         })
     
     return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+@login_required
+def pygame_challenge(request, challenge_id):
+    """Pygame challenge view."""
+    challenge = get_object_or_404(Challenge, pk=challenge_id, is_active=True, has_pygame=True)
+    
+    # Check if user has already solved this challenge
+    solved = ChallengeSolve.objects.filter(user=request.user, challenge=challenge).exists()
+    
+    # Check if user has unlocked any hints
+    unlocked_hints = HintUnlock.objects.filter(
+        user=request.user,
+        hint__challenge=challenge
+    ).values_list('hint_id', flat=True)
+    
+    # Get available hints
+    hints = []
+    for hint in Hint.objects.filter(challenge=challenge):
+        hints.append({
+            'id': hint.id,
+            'content': hint.content,
+            'chakra_cost': hint.chakra_cost,
+            'is_unlocked': hint.id in unlocked_hints
+        })
+    
+    context = {
+        'challenge': challenge,
+        'solved': solved,
+        'hints': hints,
+    }
+    return render(request, 'challenges/challenge_templates/pygame_challenge.html', context)
+
+@login_required
+def pygame_game(request, challenge_id):
+    """Serve the Pygame game for a challenge."""
+    challenge = get_object_or_404(Challenge, pk=challenge_id, is_active=True, has_pygame=True)
+    
+    # Return the HTML page that will load the Pygame game using Pygbag
+    html_content = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>{challenge.title} - Pygame Challenge</title>
+        <style>
+            html, body {{
+                margin: 0;
+                padding: 0;
+                height: 100%;
+                overflow: hidden;
+            }}
+            #canvas {{
+                width: 100%;
+                height: 100%;
+                display: block;
+            }}
+            .message {{
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                text-align: center;
+                color: white;
+                font-family: Arial, sans-serif;
+            }}
+        </style>
+    </head>
+    <body style="background-color: black;">
+        <canvas id="canvas"></canvas>
+        <div class="message">
+            <h2>Pygame Challenge</h2>
+            <p>This is a Pygame challenge that requires memory manipulation.</p>
+            <p>Use keyboard shortcuts like Ctrl+M to reveal memory values and Ctrl+C to see collected values.</p>
+            <p>The flag is hidden within the game. Find all four parts to complete the challenge.</p>
+            <p>Flag format: izanami{{m3m0ry_m4n1pul4t10n_m4st3r}}</p>
+        </div>
+        <script>
+            // Function to send flag back to parent window
+            function sendFlag(flag) {{
+                window.parent.postMessage({{ type: 'flag', flag: flag }}, '*');
+            }}
+            
+            // In a real implementation, this would load the Pygame game using Pygbag
+            // For now, we're just displaying instructions
+            document.addEventListener('keydown', function(event) {{
+                // Ctrl+M to show memory values
+                if (event.ctrlKey && event.key === 'm') {{
+                    console.log('Memory values: [42, 13, 37, 73]');
+                    alert('Memory values: [42, 13, 37, 73]');
+                }}
+                
+                // Ctrl+C to show collected values
+                if (event.ctrlKey && event.key === 'c') {{
+                    console.log('Collected values: []');
+                    alert('Collected values: []');
+                }}
+                
+                // Ctrl+F to reveal flag (for testing)
+                if (event.ctrlKey && event.key === 'f') {{
+                    const flag = 'izanami{{m3m0ry_m4n1pul4t10n_m4st3r}}';
+                    console.log('FLAG:', flag);
+                    alert('You found the flag: ' + flag);
+                    sendFlag(flag);
+                }}
+            }});
+        </script>
+    </body>
+    </html>
+    """
+    
+    return HttpResponse(html_content)

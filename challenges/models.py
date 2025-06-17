@@ -59,6 +59,8 @@ class Challenge(models.Model):
     has_graphql_vulnerability = models.BooleanField(default=False)
     has_race_condition = models.BooleanField(default=False)
     has_prototype_pollution = models.BooleanField(default=False)
+    has_pygame = models.BooleanField(default=False)  # New field for Pygame challenges
+    pygame_file = models.FileField(upload_to='pygame_challenges/', null=True, blank=True)  # Path to the Pygame file
     
     def __str__(self):
         return self.title

@@ -17,6 +17,10 @@ urlpatterns = [
     path('<int:challenge_id>/submit/', views.submit_flag, name='submit_flag'),
     path('<int:challenge_id>/hint/', views.unlock_hint, name='unlock_hint'),
     
+    # Pygame challenge URLs
+    path('pygame/<int:challenge_id>/', views.pygame_challenge, name='pygame_challenge'),
+    path('pygame/<int:challenge_id>/game/', views.pygame_game, name='pygame_game'),
+    
     # API endpoints for challenges
     path('api/login_check/', views.login_check_api, name='login_check_api'),
     path('api/update_profile/', views.update_profile_api, name='update_profile_api'),

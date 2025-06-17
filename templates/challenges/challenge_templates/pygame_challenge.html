@@ -1,0 +1,278 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ challenge.title }} - Pygame Challenge{% endblock %}
+
+{% block extra_head %}
+<script src="/static/js/pygbag-loader.js"></script>
+<style>
+    .pygame-container {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+    
+    #pygame-canvas {
+        border: 2px solid #ff0000;
+        box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+    }
+    
+    .loading-spinner {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 400px;
+        width: 100%;
+    }
+    
+    .loading-text {
+        color: #ff0000;
+        font-size: 1.5rem;
+        margin-left: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'challenges:index' %}">Challenges</a></li>
+                    {% if challenge.difficulty.name == 'Academy' %}
+                        <li class="breadcrumb-item"><a href="{% url 'challenges:academy' %}">{{ challenge.difficulty.name }}</a></li>
+                    {% elif challenge.difficulty.name == 'Chunin' %}
+                        <li class="breadcrumb-item"><a href="{% url 'challenges:chunin' %}">{{ challenge.difficulty.name }}</a></li>
+                    {% elif challenge.difficulty.name == 'Jōnin' %}
+                        <li class="breadcrumb-item"><a href="{% url 'challenges:jonin' %}">{{ challenge.difficulty.name }}</a></li>
+                    {% elif challenge.difficulty.name == 'Uchiha' %}
+                        <li class="breadcrumb-item"><a href="{% url 'challenges:uchiha' %}">{{ challenge.difficulty.name }}</a></li>
+                    {% else %}
+                        <li class="breadcrumb-item">{{ challenge.difficulty.name }}</li>
+                    {% endif %}
+                    <li class="breadcrumb-item active" aria-current="page">{{ challenge.title }}</li>
+                </ol>
+            </nav>
+            
+            <div class="card border-danger mb-4">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-gamepad me-2"></i>{{ challenge.title }}
+                        <span class="badge bg-dark float-end">{{ challenge.points }} SP</span>
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        {{ challenge.description|safe }}
+                    </div>
+                    
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Challenge Instructions:</strong> This challenge requires you to play and exploit a Pygame game. The flag is hidden within the game. You may need to analyze the game's behavior, modify memory values, or find hidden features to reveal the flag.
+                    </div>
+                    
+                    <div class="pygame-container">
+                        <div id="loading-area" class="loading-spinner">
+                            <div class="spinner-border text-danger" role="status"></div>
+                            <span class="loading-text">Loading Pygame...</span>
+                        </div>
+                        <div id="pygame-embed" style="display: none;">
+                            <iframe id="pygame-frame" width="800" height="600" frameborder="0"></iframe>
+                        </div>
+                    </div>
+                    
+                    <!-- Chakra cost warning -->
+                    <div class="alert alert-info mb-4">
+                        <i class="fas fa-fire me-2"></i>
+                        <strong>Chakra Cost:</strong> {{ challenge.chakra_cost }} points per attempt
+                    </div>
+                    
+                    <!-- Hints section -->
+                    {% if challenge.hint_available and hints %}
+                    <div class="mb-4">
+                        <h5><i class="fas fa-lightbulb text-warning me-2"></i>Hints</h5>
+                        <div class="accordion" id="hintsAccordion">
+                            {% for hint in hints %}
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="hint-heading-{{ hint.id }}">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#hint-collapse-{{ hint.id }}" aria-expanded="false" aria-controls="hint-collapse-{{ hint.id }}">
+                                        Hint #{{ forloop.counter }} 
+                                        {% if hint.is_unlocked %}
+                                        <span class="badge bg-success ms-2">Unlocked</span>
+                                        {% else %}
+                                        <span class="badge bg-warning ms-2">Cost: {{ hint.chakra_cost }} Chakra</span>
+                                        {% endif %}
+                                    </button>
+                                </h2>
+                                <div id="hint-collapse-{{ hint.id }}" class="accordion-collapse collapse" aria-labelledby="hint-heading-{{ hint.id }}" data-bs-parent="#hintsAccordion">
+                                    <div class="accordion-body">
+                                        {% if hint.is_unlocked %}
+                                        {{ hint.content|safe }}
+                                        {% else %}
+                                        <button class="btn btn-sm btn-warning unlock-hint-btn" data-hint-id="{{ hint.id }}" data-chakra-cost="{{ hint.chakra_cost }}">
+                                            <i class="fas fa-unlock me-2"></i>Unlock Hint ({{ hint.chakra_cost }} Chakra)
+                                        </button>
+                                        <div class="hint-content-{{ hint.id }} d-none"></div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Flag submission form -->
+                    <div class="flag-submission">
+                        <h5><i class="fas fa-flag text-danger me-2"></i>Submit Flag</h5>
+                        {% if not solved %}
+                        <form id="flag-form" data-challenge-id="{{ challenge.id }}" data-solved="{{ solved|yesno:'true,false' }}">
+                            {% csrf_token %}
+                            <div class="input-group">
+                                <input type="text" id="flag-input" class="form-control" placeholder="Enter flag here...">
+                                <button class="btn btn-danger" type="submit">Submit</button>
+                            </div>
+                        </form>
+                        {% else %}
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle me-2"></i>You have already solved this challenge!
+                        </div>
+                        {% endif %}
+                        <div id="flag-message" class="mt-3"></div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="badge bg-secondary me-2">{{ challenge.category.name }}</span>
+                            <span class="badge bg-info">{{ challenge.difficulty.name }}</span>
+                        </div>
+                        <div>
+                            <i class="fas fa-users me-1"></i>{{ challenge.solves.count }} solves
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get the challenge ID from the flag form
+        const challengeId = document.getElementById('flag-form').dataset.challengeId;
+        
+        // Set up the Pygame iframe
+        const loadingArea = document.getElementById('loading-area');
+        const pygameEmbed = document.getElementById('pygame-embed');
+        const pygameFrame = document.getElementById('pygame-frame');
+        
+        // Load the Pygame game
+        pygameFrame.onload = function() {
+            loadingArea.style.display = 'none';
+            pygameEmbed.style.display = 'block';
+        };
+        
+        // Set the iframe source to the Pygame game URL
+        pygameFrame.src = `/challenges/pygame/${challengeId}/game/`;
+        
+        // Listen for messages from the iframe (for flag submission)
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'flag') {
+                const flag = event.data.flag;
+                document.getElementById('flag-input').value = flag;
+                // Optionally auto-submit the flag
+                // document.getElementById('flag-form').submit();
+            }
+        });
+        
+        // Handle flag submission
+        const flagForm = document.getElementById('flag-form');
+        const flagInput = document.getElementById('flag-input');
+        const flagMessage = document.getElementById('flag-message');
+        
+        if (flagForm) {
+            flagForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const flag = flagInput.value.trim();
+                if (!flag) {
+                    flagMessage.innerHTML = '<div class="alert alert-warning">Please enter a flag.</div>';
+                    return;
+                }
+                
+                // Submit the flag
+                fetch(`/challenges/${challengeId}/submit/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    },
+                    body: JSON.stringify({ flag: flag })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        flagMessage.innerHTML = '<div class="alert alert-success"><i class="fas fa-check-circle me-2"></i>' + data.message + '</div>';
+                        flagForm.style.display = 'none';
+                        
+                        // Update the UI to show the challenge is solved
+                        setTimeout(function() {
+                            window.location.reload();
+                        }, 2000);
+                    } else {
+                        flagMessage.innerHTML = '<div class="alert alert-danger"><i class="fas fa-times-circle me-2"></i>' + data.message + '</div>';
+                    }
+                })
+                .catch(error => {
+                    flagMessage.innerHTML = '<div class="alert alert-danger"><i class="fas fa-exclamation-circle me-2"></i>An error occurred. Please try again.</div>';
+                    console.error('Error:', error);
+                });
+            });
+        }
+        
+        // Handle hint unlocking
+        const unlockHintButtons = document.querySelectorAll('.unlock-hint-btn');
+        unlockHintButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const hintId = this.dataset.hintId;
+                const chakraCost = this.dataset.chakraCost;
+                
+                if (confirm(`Are you sure you want to unlock this hint? It will cost ${chakraCost} chakra points.`)) {
+                    fetch(`/challenges/hint/${hintId}/unlock/`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            const hintContent = document.querySelector(`.hint-content-${hintId}`);
+                            hintContent.innerHTML = data.content || data.hint;
+                            hintContent.classList.remove('d-none');
+                            button.remove();
+                            
+                            // Update chakra display in navbar
+                            const chakraDisplay = document.getElementById('chakra-display');
+                            if (chakraDisplay) {
+                                chakraDisplay.textContent = data.remaining_chakra || data.chakra;
+                            }
+                        } else {
+                            alert(data.message);
+                        }
+                    })
+                    .catch(error => {
+                        alert('An error occurred. Please try again.');
+                        console.error('Error:', error);
+                    });
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

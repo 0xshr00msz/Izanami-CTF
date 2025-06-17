@@ -96,8 +96,13 @@
   },
   {
     "model": "challenges.challengecategory",
-    "pk": 4,
+    "pk": 15,
     "fields": {
+      "name": "Memory Manipulation",
+      "description": "Challenges that require manipulating memory values in games or applications to reveal flags.",
+      "icon": "fa-gamepad"
+    }
+  },
       "name": "File Upload",
       "description": "Challenges that involve exploiting file upload vulnerabilities to achieve code execution.",
       "icon": "fa-file-upload"
@@ -713,6 +718,65 @@
       "name": "Perfect Loop",
       "description": "Solve a challenge without using any hints",
       "icon": "fa-sync-alt"
+    }
+  },
+  {
+    "model": "challenges.challenge",
+    "pk": 20,
+    "fields": {
+      "title": "Memory Manipulation Mastery",
+      "description": "In this challenge, you'll need to manipulate memory values in a Pygame game to reveal the hidden flag. Look for patterns and secret values that can be modified to progress through the game. Use memory inspection tools or debug the game to find the flag parts.",
+      "category": 15,
+      "difficulty": 2,
+      "points": 300,
+      "flag": "izanami{m3m0ry_m4n1pul4t10n_m4st3r}",
+      "is_active": true,
+      "created_at": "2025-06-01T00:00:00Z",
+      "updated_at": "2025-06-01T00:00:00Z",
+      "requires_authentication": true,
+      "chakra_cost": 15,
+      "hint_available": true,
+      "has_xss": false,
+      "has_sqli": false,
+      "has_csrf": false,
+      "has_file_upload": false,
+      "has_ssrf": false,
+      "has_command_injection": false,
+      "has_insecure_deserialization": false,
+      "has_websocket_vulnerability": false,
+      "has_api_vulnerability": false,
+      "has_graphql_vulnerability": false,
+      "has_race_condition": false,
+      "has_prototype_pollution": false,
+      "has_pygame": true,
+      "pygame_file": "pygame_challenges/1/main.py"
+    }
+  },
+  {
+    "model": "challenges.hint",
+    "pk": 30,
+    "fields": {
+      "challenge": 20,
+      "content": "Try using keyboard shortcuts like Ctrl+M to reveal memory values and Ctrl+C to see collected values.",
+      "chakra_cost": 5
+    }
+  },
+  {
+    "model": "challenges.hint",
+    "pk": 31,
+    "fields": {
+      "challenge": 20,
+      "content": "The flag is split into 4 parts. You need to collect specific values in a certain order to reveal each part.",
+      "chakra_cost": 10
+    }
+  },
+  {
+    "model": "challenges.hint",
+    "pk": 32,
+    "fields": {
+      "challenge": 20,
+      "content": "The secret values are: 42, 13, 37, and 73. Try to collect these in different combinations.",
+      "chakra_cost": 15
     }
   }
 ]
