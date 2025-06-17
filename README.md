@@ -39,6 +39,10 @@ A web-based Capture The Flag (CTF) game inspired by Itachi's Sharingan Izanami f
     - [Vulnerable API Endpoints (for challenges)](#vulnerable-api-endpoints-for-challenges)
   - [WebSocket Integration](#websocket-integration)
     - [WebSocket Challenge Example](#websocket-challenge-example)
+  - [Pygame Integration](#pygame-integration)
+    - [Pygame Challenge Features](#pygame-challenge-features)
+    - [Pygame Challenge Example](#pygame-challenge-example)
+    - [Creating Pygame Challenges](#creating-pygame-challenges)
   - [Security Considerations](#security-considerations)
     - [Deliberate Vulnerabilities](#deliberate-vulnerabilities)
   - [License](#license)
@@ -83,6 +87,7 @@ The game includes a wide range of web security challenges:
 13. **Web Cache Poisoning**: Manipulate cached content
 14. **HTTP Request Smuggling**: Exploit request handling inconsistencies
 15. **Prototype Pollution**: Manipulate JavaScript object prototypes
+16. **Memory Manipulation**: Analyze and manipulate memory values in interactive games
 
 ## Game Mechanics
 
@@ -235,6 +240,8 @@ The main model for challenges with the following key fields:
 - `flag`: The correct flag string
 - `chakra_cost`: Chakra points required to attempt
 - Various boolean fields for challenge types (has_xss, has_sqli, etc.)
+- `has_pygame`: Boolean indicating if the challenge is a Pygame challenge
+- `pygame_file`: Path to the Pygame file for interactive game challenges
 
 #### Other Key Models
 - `DifficultyLevel`: Defines difficulty levels
@@ -389,3 +396,52 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - Created with assistance from Amazon Q
 - Inspired by Naruto Shippuden and the concept of Izanami
 - Built for educational purposes to teach web security concepts
+## Pygame Integration
+
+The application includes interactive game-based challenges using Pygame, which are embedded directly in the browser. These challenges test players' ability to analyze and manipulate memory values to reveal hidden flags.
+
+### Pygame Challenge Features
+
+- **In-Browser Gameplay**: Interactive games run directly in the browser using HTML5 Canvas
+- **Memory Manipulation**: Players must discover and manipulate memory values to progress
+- **Hidden Flags**: Flags are revealed in parts as players solve different aspects of the game
+- **Keyboard Shortcuts**: Special key combinations reveal hidden information (e.g., Ctrl+M to view memory values)
+- **Progressive Difficulty**: Players must collect specific values in certain patterns to reveal the complete flag
+
+### Pygame Challenge Example
+
+```javascript
+// Check secret values to reveal flag parts
+function checkSecretValues() {
+    // Check for specific patterns in collected values
+    if (collectedValues.includes(42) && !flagRevealed[0]) {
+        flagRevealed[0] = true;
+        console.log("You found the first part of the flag!");
+        updateFlagDisplay();
+    }
+    
+    if (collectedValues.includes(13) && collectedValues.includes(37) && !flagRevealed[1]) {
+        flagRevealed[1] = true;
+        console.log("You found the second part of the flag!");
+        updateFlagDisplay();
+    }
+    
+    // Check if all flag parts have been revealed
+    if (flagRevealed.every(part => part)) {
+        const flag = flagParts.join('');
+        console.log(`FLAG: ${flag}`);
+        gameWon(flag);
+    }
+}
+```
+
+### Creating Pygame Challenges
+
+To create a new Pygame challenge:
+
+1. Add a new entry to the `fixtures/initial_data.json` file with `has_pygame` set to `true`
+2. Create a JavaScript implementation of the game in the challenge template
+3. Define the memory values and patterns required to reveal the flag
+4. Implement keyboard shortcuts for revealing hidden information
+
+Pygame challenges add a new dimension to the CTF, requiring players to think about memory manipulation and game mechanics rather than just traditional web vulnerabilities.
